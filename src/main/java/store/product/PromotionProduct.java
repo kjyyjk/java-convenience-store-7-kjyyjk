@@ -9,4 +9,8 @@ public class PromotionProduct extends Product {
         super(name, price, quantity);
         this.promotion = promotion;
     }
+
+    public String getPromotionName() {
+        return promotion.getName();
+    }
 }

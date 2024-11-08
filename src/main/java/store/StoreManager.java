@@ -4,6 +4,7 @@ import static store.Parser.parsePromotions;
 import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
+import static store.view.OutputView.printProducts;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +14,7 @@ public class StoreManager {
     public void run() {
         Promotions promotions = getPromotions();
         List<Product> products = getProducts(promotions);
+        printProducts(products);
     }
 
     private static Promotions getPromotions() {
