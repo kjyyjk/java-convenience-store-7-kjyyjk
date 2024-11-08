@@ -10,12 +10,12 @@ import static store.view.OutputView.printProducts;
 
 import java.io.IOException;
 import java.util.List;
-import store.product.Product;
+import java.util.Map;
 
 public class StoreManager {
     public void run() {
         Promotions promotions = getPromotions();
-        List<Product> products = getProducts(promotions);
+        Map<String, Product> products = getProducts(promotions);
         printProducts(products);
         List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
     }
@@ -28,7 +28,7 @@ public class StoreManager {
         }
     }
 
-    private static List<Product> getProducts(final Promotions promotions) {
+    private static Map<String, Product> getProducts(final Promotions promotions) {
         try {
             return parseProducts(readProducts(), promotions);
         } catch (IOException e) {

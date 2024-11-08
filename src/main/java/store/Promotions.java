@@ -5,11 +5,11 @@ import java.util.Map;
 public class Promotions {
     private Map<String, Promotion> promotions;
 
-    public Promotions(Map<String, Promotion> promotions) {
+    public Promotions(final Map<String, Promotion> promotions) {
         this.promotions = promotions;
     }
 
-    public Promotion get(String name) {
+    public Promotion get(final String name) {
         return promotions.getOrDefault(name, null);
     }
 }

@@ -8,9 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import store.product.GeneralProduct;
-import store.product.Product;
-import store.product.PromotionProduct;
 
 public class Parser {
     private static final String PRODUCT_INFORMATION_DELIMITER = ",";
@@ -31,18 +28,46 @@ public class Parser {
         return Collections.unmodifiableMap(promotions);
     }
 
-    public static List<Product> parseProducts(final BufferedReader bufferedReader, Promotions promotions)
+    public static Map<String, Product> parseProducts(final BufferedReader bufferedReader, final Promotions promotions)
             throws IOException {
-        List<Product> products = new ArrayList<>();
+        Map<String, Product> products = new HashMap<>();
         String productInformation = bufferedReader.readLine();
         while ((productInformation = bufferedReader.readLine()) != null) {
-            Product product = parseProduct(productInformation, promotions);
-            products.add(product);
+            String[] split = productInformation.split(PRODUCT_INFORMATION_DELIMITER);
+            Product product = getProduct(promotions, products, split);
+            products.put(product.getName(), product);
         }
-        return Collections.unmodifiableList(products);
+        return Collections.unmodifiableMap(products);
     }
 
-    public static List<PurchaseItem> parsePurchaseItems(String input) {
+    private static Product getProduct(Promotions promotions, Map<String, Product> products, String[] split) {
+        String name = split[0];
+        int price = parseInt(split[1]);
+        int quantity = parseInt(split[2]);
+        Promotion promotion = promotions.get(split[3]);
+        Product product = getProduct(products, name, price);
+        increaseProductQuantity(product, promotion, quantity);
+        return product;
+    }
+
+    private static Product getProduct(Map<String, Product> products, String name, int price) {
+        if (products.containsKey(name)) {
+            return products.get(name);
+        }
+        return new Product(name, price);
+    }
+
+    private static void increaseProductQuantity(Product product, Promotion promotion, int quantity) {
+        if (promotion == null) {
+            product.increaseGeneralQuantity(quantity);
+            return;
+        }
+
+        product.doPromotion(promotion);
+        product.increasePromotionQuantity(quantity);
+    }
+
+    public static List<PurchaseItem> parsePurchaseItems(final String input) {
         List<PurchaseItem> purchaseItems = new ArrayList<>();
         for (String purchaseItem : input.split(PURCHASE_ITEMS_DELIMITER)) {
             purchaseItems.add(parsePurchaseItem(purchaseItem));
@@ -50,7 +75,7 @@ public class Parser {
         return purchaseItems;
     }
 
-    private static PurchaseItem parsePurchaseItem(String purchaseItem) {
+    private static PurchaseItem parsePurchaseItem(final String purchaseItem) {
         validatePurchaseItemFormat(purchaseItem);
         String[] split = getPurchaseItemSubstring(purchaseItem).split(PURCHASE_ITEM_DELIMITER);
         String name = split[0];
@@ -58,13 +83,13 @@ public class Parser {
         return new PurchaseItem(name, quantity);
     }
 
-    private static void validatePurchaseItemFormat(String token) {
+    private static void validatePurchaseItemFormat(final String token) {
         if (!(token.startsWith(PURCHASE_ITEM_PREFIX) && token.endsWith(PURCHASE_ITEM_SUFFIX))) {
             throw new IllegalArgumentException(INVALID_PURCHASE_ITEM_FORMAT);
         }
     }
 
-    private static String getPurchaseItemSubstring(String token) {
+    private static String getPurchaseItemSubstring(final String token) {
         int beginIndex = PURCHASE_ITEM_PREFIX.length();
         int endIndex = token.length() - PURCHASE_ITEM_SUFFIX.length();
         return token.substring(beginIndex, endIndex);
@@ -85,26 +110,6 @@ public class Parser {
         int bonusQuantity = parseInt(split[2]);
         LocalDate startDate = parseLocalDate(split[3]);
         LocalDate endDate = parseLocalDate(split[4]);
-        return createPromotion(name, buyQuantity, bonusQuantity, startDate, endDate);
-    }
-
-    private static Promotion createPromotion(final String name, final int buyQuantity, final int bonusQuantity,
-                                             final LocalDate startDate,
-                                             final LocalDate endDate) {
         return new Promotion(name, buyQuantity, bonusQuantity, startDate, endDate);
-    }
-
-    private static Product parseProduct(final String productInfo, Promotions promotions) {
-        String[] split = productInfo.split(PRODUCT_INFORMATION_DELIMITER);
-        Promotion promotion = promotions.get(split[3]);
-        return createProduct(split[0], parseInt(split[1]), parseInt(split[2]), promotion);
-    }
-
-    private static Product createProduct(final String name, final int price, final int quantity,
-                                         final Promotion promotion) {
-        if (promotion == null) {
-            return new GeneralProduct(name, price, quantity);
-        }
-        return new PromotionProduct(name, price, quantity, promotion);
     }
 }
