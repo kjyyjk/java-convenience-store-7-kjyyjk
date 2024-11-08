@@ -1,9 +1,11 @@
 package store;
 
 import static store.Parser.parsePromotions;
+import static store.Parser.parsePurchaseItems;
 import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
+import static store.view.InputView.readPurchaseItems;
 import static store.view.OutputView.printProducts;
 
 import java.io.IOException;
@@ -15,6 +17,7 @@ public class StoreManager {
         Promotions promotions = getPromotions();
         List<Product> products = getProducts(promotions);
         printProducts(products);
+        List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
     }
 
     private static Promotions getPromotions() {

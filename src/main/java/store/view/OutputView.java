@@ -21,7 +21,6 @@ public class OutputView {
             String message = getGeneralProductPrintMessage((GeneralProduct) product);
             System.out.println(message);
         }
-
         if (product instanceof PromotionProduct) {
             String message = getPromotionProductPrintMessage((PromotionProduct) product);
             System.out.println(message);
