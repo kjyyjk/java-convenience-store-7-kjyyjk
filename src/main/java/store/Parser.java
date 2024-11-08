@@ -4,11 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import store.product.GeneralProduct;
 import store.product.Product;
 import store.product.PromotionProduct;
@@ -16,41 +15,34 @@ import store.product.PromotionProduct;
 public class Parser {
     private static final String PRODUCT_INFORMATION_DELIMITER = ",";
     private static final String PROMOTION_INFORMATION_DELIMITER = ",";
-    private static final String NO_PROMOTION = "null";
-
-    public static List<Product> parseProducts(final BufferedReader bufferedReader) throws IOException {
-        List<Product> products = new ArrayList<>();
-        String productInformation;
-        bufferedReader.readLine();
-        while ((productInformation = bufferedReader.readLine()) != null) {
-            Product product = parseProduct(productInformation);
-            products.add(product);
-        }
-        return products;
-    }
-
-    private static Product parseProduct(final String productInfo) {
-        String[] split = productInfo.split(PRODUCT_INFORMATION_DELIMITER);
-        return createProduct(split[0], parseInt(split[1]), parseInt(split[2]), split[3]);
-    }
-
-    private static Product createProduct(final String name, final int price, final int quantity,
-                                         final String promotion) {
-        if (promotion.equals(NO_PROMOTION)) {
-            return new GeneralProduct(name, price, quantity);
-        }
-        return new PromotionProduct(name, price, quantity, promotion);
-    }
 
     public static Map<String, Promotion> parsePromotions(final BufferedReader bufferedReader) throws IOException {
         Map<String, Promotion> promotions = new HashMap<>();
-        String promotionInformation;
-        bufferedReader.readLine();
+        String promotionInformation = bufferedReader.readLine();
         while ((promotionInformation = bufferedReader.readLine()) != null) {
             Promotion promotion = parsePromotion(promotionInformation);
             promotions.put(promotion.getName(), promotion);
         }
-        return promotions;
+        return Collections.unmodifiableMap(promotions);
+    }
+
+    public static List<Product> parseProducts(final BufferedReader bufferedReader, Promotions promotions)
+            throws IOException {
+        List<Product> products = new ArrayList<>();
+        String productInformation = bufferedReader.readLine();
+        while ((productInformation = bufferedReader.readLine()) != null) {
+            Product product = parseProduct(productInformation, promotions);
+            products.add(product);
+        }
+        return Collections.unmodifiableList(products);
+    }
+
+    public static int parseInt(final String number) {
+        return Integer.parseInt(number);
+    }
+
+    public static LocalDate parseLocalDate(final String date) {
+        return LocalDate.parse(date);
     }
 
     private static Promotion parsePromotion(final String promotionInformation) {
@@ -69,11 +61,17 @@ public class Parser {
         return new Promotion(name, buyQuantity, bonusQuantity, startDate, endDate);
     }
 
-    public static int parseInt(final String number) {
-        return Integer.parseInt(number);
+    private static Product parseProduct(final String productInfo, Promotions promotions) {
+        String[] split = productInfo.split(PRODUCT_INFORMATION_DELIMITER);
+        Promotion promotion = promotions.get(split[3]);
+        return createProduct(split[0], parseInt(split[1]), parseInt(split[2]), promotion);
     }
 
-    public static LocalDate parseLocalDate(final String date) {
-        return LocalDate.parse(date);
+    private static Product createProduct(final String name, final int price, final int quantity,
+                                         final Promotion promotion) {
+        if (promotion == null) {
+            return new GeneralProduct(name, price, quantity);
+        }
+        return new PromotionProduct(name, price, quantity, promotion);
     }
 }

@@ -1,9 +1,11 @@
 package store.product;
 
-public class PromotionProduct extends Product {
-    private String promotion;
+import store.Promotion;
 
-    public PromotionProduct(final String name, final int price, final int quantity, final String promotion) {
+public class PromotionProduct extends Product {
+    private Promotion promotion;
+
+    public PromotionProduct(final String name, final int price, final int quantity, final Promotion promotion) {
         super(name, price, quantity);
         this.promotion = promotion;
     }

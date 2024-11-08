@@ -7,26 +7,25 @@ import static store.StoreFileReader.readPromotions;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import store.product.Product;
 
 public class StoreManager {
     public void run() {
-        List<Product> products = getProducts();
-        Map<String, Promotion> promotions = getPromotions();
+        Promotions promotions = getPromotions();
+        List<Product> products = getProducts(promotions);
     }
 
-    private static Map<String, Promotion> getPromotions() {
+    private static Promotions getPromotions() {
         try {
-            return parsePromotions(readPromotions());
+            return new Promotions(parsePromotions(readPromotions()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static List<Product> getProducts() {
+    private static List<Product> getProducts(final Promotions promotions) {
         try {
-            return parseProducts(readProducts());
+            return parseProducts(readProducts(), promotions);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
