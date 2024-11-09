@@ -1,6 +1,7 @@
 package store;
 
 import static store.Parser.parseExtraBonusQuantity;
+import static store.Parser.parseMembershipDiscount;
 import static store.Parser.parseNoPromotionQuantity;
 import static store.Parser.parsePromotions;
 import static store.Parser.parsePurchaseItems;
@@ -8,6 +9,7 @@ import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
 import static store.view.InputView.readExtraBonusQuantity;
+import static store.view.InputView.readMembershipDiscount;
 import static store.view.InputView.readNoPromotionQuantity;
 import static store.view.InputView.readPurchaseItems;
 import static store.view.OutputView.printProducts;
@@ -34,6 +36,7 @@ public class StoreManager {
             List<PurchaseHistoryDetail> purchaseHistory = new ArrayList<>();
             for (PurchaseItem purchaseItem : purchaseItems) {
                 int totalBonusQuantity = 0;
+                int promotionAppliedQuantity = 0;
                 int purchaseQuantity = purchaseItem.getQuantity();
                 Product product = products.get(purchaseItem.getName());
                 String productName = product.getName();
@@ -48,21 +51,21 @@ public class StoreManager {
                     } else {
                         int noPromotionQuantity = product.getNoPromotionQuantity(purchaseQuantity);
                         if (noPromotionQuantity > 0) {
-                            if (!parseNoPromotionQuantity(
-                                    readNoPromotionQuantity(productName, noPromotionQuantity))) {
+                            if (!parseNoPromotionQuantity(readNoPromotionQuantity(productName, noPromotionQuantity))) {
                                 purchaseQuantity -= noPromotionQuantity;
                             }
                         }
                     }
 
+                    promotionAppliedQuantity = product.getPromotionAppliedQuantity(purchaseQuantity);
                     totalBonusQuantity = product.getTotalBonusQuantity(purchaseQuantity);
                 }
                 product.decreaseQuantity(purchaseQuantity);
                 PurchaseHistoryDetail purchaseHistoryDetail = new PurchaseHistoryDetail(productName, product.getPrice(),
-                        purchaseQuantity, totalBonusQuantity);
+                        purchaseQuantity, promotionAppliedQuantity, totalBonusQuantity);
                 purchaseHistory.add(purchaseHistoryDetail);
             }
-
+            boolean membershipDiscount = parseMembershipDiscount(readMembershipDiscount());
             return purchaseHistory;
         } catch (IllegalArgumentException e) {
             OutputView.printError(e);

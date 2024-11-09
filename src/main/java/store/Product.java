@@ -92,4 +92,11 @@ public class Product {
         }
         return promotion.getTotalBonusQuantity(promotionQuantity);
     }
+
+    public int getPromotionAppliedQuantity(int purchaseQuantity) {
+        if (purchaseQuantity <= promotionQuantity) {
+            return promotion.getAppliedQuantity(purchaseQuantity);
+        }
+        return promotion.getAppliedQuantity(promotionQuantity);
+    }
 }

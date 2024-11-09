@@ -43,4 +43,8 @@ public class Promotion {
     public int getTotalBonusQuantity(final int purchaseQuantity) {
         return (purchaseQuantity / (buyQuantity + bonusQuantity)) * bonusQuantity;
     }
+
+    public int getAppliedQuantity(final int purchaseQuantity) {
+        return (purchaseQuantity / (buyQuantity + bonusQuantity)) * (buyQuantity + bonusQuantity);
+    }
 }
