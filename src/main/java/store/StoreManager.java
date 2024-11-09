@@ -1,10 +1,12 @@
 package store;
 
+import static store.Parser.parseExtraBonusQuantity;
 import static store.Parser.parsePromotions;
 import static store.Parser.parsePurchaseItems;
 import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
+import static store.view.InputView.readExtraBonusQuantity;
 import static store.view.InputView.readPurchaseItems;
 import static store.view.OutputView.printProducts;
 
@@ -30,6 +32,14 @@ public class StoreManager {
                 Product product = products.get(purchaseItem.getName());
                 product.validateExceedQuantity(purchaseItem.getQuantity());
                 boolean doingPromotion = product.isDoingPromotion(getTodayLocalDate());
+                if (doingPromotion) {
+                    int extraPromotionQuantity = product.getExtraPromotionQuantity(purchaseItem.getQuantity());
+                    if (extraPromotionQuantity > 0) {
+                        if (parseExtraBonusQuantity(readExtraBonusQuantity(product.getName(), extraPromotionQuantity))) {
+                            purchaseItem.increaseQuantity(extraPromotionQuantity);
+                        }
+                    }
+                }
             }
         } catch (IllegalArgumentException e) {
             OutputView.printError(e);

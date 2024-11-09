@@ -112,4 +112,16 @@ public class Parser {
         LocalDate endDate = parseLocalDate(split[4]);
         return new Promotion(name, buyQuantity, bonusQuantity, startDate, endDate);
     }
+
+    public static boolean parseExtraBonusQuantity(final String input) {
+        if (input.equals("Y")) {
+            return true;
+        }
+
+        if (input.equals("N")) {
+            return false;
+        }
+
+        throw new IllegalArgumentException("잘못된 입력입니다. 다시 입력해 주세요.");
+    }
 }

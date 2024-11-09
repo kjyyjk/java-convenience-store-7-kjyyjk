@@ -53,13 +53,21 @@ public class Product {
         return this.promotion != null;
     }
 
-    public void validateExceedQuantity(int quantity) {
-        if (generalQuantity + promotionQuantity < quantity) {
+    public void validateExceedQuantity(final int purchaseQuantity) {
+        if (generalQuantity + promotionQuantity < purchaseQuantity) {
             throw new IllegalArgumentException(EXCEED_QUANTITY_ERROR);
         }
     }
 
-    public boolean isDoingPromotion(LocalDate date) {
+    public boolean isDoingPromotion(final LocalDate date) {
         return promotion.isDoing(date);
+    }
+
+    public int getExtraPromotionQuantity(final int purchaseQuantity) {
+        int extraQuantity = promotion.getExtraQuantity(purchaseQuantity);
+        if (extraQuantity + purchaseQuantity <= promotionQuantity) {
+            return extraQuantity;
+        }
+        return 0;
     }
 }

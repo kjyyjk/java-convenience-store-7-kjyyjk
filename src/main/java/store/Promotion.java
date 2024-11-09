@@ -22,10 +22,17 @@ public class Promotion {
         return name;
     }
 
-    public boolean isDoing(LocalDate date) {
+    public boolean isDoing(final LocalDate date) {
         if (date.isAfter(endDate) || date.isBefore(startDate)) {
             return false;
         }
         return true;
+    }
+
+    public int getExtraQuantity(final int purchaseQuantity) {
+        if ((purchaseQuantity % (buyQuantity + bonusQuantity)) >= buyQuantity) {
+            return bonusQuantity;
+        }
+        return 0;
     }
 }
