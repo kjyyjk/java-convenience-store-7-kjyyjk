@@ -3,12 +3,12 @@ package store;
 import java.time.LocalDate;
 
 public class Product {
+    private static final String EXCEED_QUANTITY_ERROR = "재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
     private String name;
     private int price;
     private int generalQuantity;
     private int promotionQuantity;
     private Promotion promotion;
-    private static final String EXCEED_QUANTITY_ERROR = "재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
 
     public Product(final String name, final int price) {
         this.name = name;

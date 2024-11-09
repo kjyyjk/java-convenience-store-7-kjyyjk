@@ -8,6 +8,7 @@ import static store.Parser.parsePurchaseItems;
 import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
+import static store.StoreFileWriter.updateProducts;
 import static store.view.InputView.readExtraBonusQuantity;
 import static store.view.InputView.readMembershipDiscount;
 import static store.view.InputView.readNoPromotionQuantity;
@@ -30,6 +31,11 @@ public class StoreManager {
         printProducts(products);
         PurchaseHistory purchaseHistory = purchase(products);
         printReceipt(purchaseHistory);
+        try {
+            updateProducts(products);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private PurchaseHistory purchase(Map<String, Product> products) {
