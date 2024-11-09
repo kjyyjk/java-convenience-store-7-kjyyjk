@@ -13,6 +13,7 @@ import static store.view.InputView.readMembershipDiscount;
 import static store.view.InputView.readNoPromotionQuantity;
 import static store.view.InputView.readPurchaseItems;
 import static store.view.OutputView.printProducts;
+import static store.view.OutputView.printReceipt;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class StoreManager {
         Map<String, Product> products = getProducts(promotions);
         printProducts(products);
         PurchaseHistory purchaseHistory = purchase(products);
+        printReceipt(purchaseHistory);
     }
 
     private PurchaseHistory purchase(Map<String, Product> products) {

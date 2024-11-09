@@ -16,6 +16,26 @@ public class PurchaseHistoryDetail {
         this.bonusQuantity = bonusQuantity;
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
+    public int getBonusQuantity() {
+        return bonusQuantity;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public int getProductPrice() {
+        return productPrice;
+    }
+
+    public boolean hasBonusQuantity() {
+        return bonusQuantity > 0;
+    }
+
     public int calculatePurchaseAmount() {
         return productPrice * totalQuantity;
     }
