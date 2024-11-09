@@ -1,13 +1,12 @@
 package store;
 
-import store.Promotion;
-
 public class Product {
     private String name;
     private int price;
     private int generalQuantity;
     private int promotionQuantity;
     private Promotion promotion;
+    private static final String EXCEED_QUANTITY_ERROR = "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
 
     public Product(final String name, final int price) {
         this.name = name;
@@ -50,5 +49,11 @@ public class Product {
 
     public boolean hasPromotion() {
         return this.promotion != null;
+    }
+
+    public void validateExceedQuantity(int quantity) {
+        if (generalQuantity + promotionQuantity < quantity) {
+            throw new IllegalArgumentException(EXCEED_QUANTITY_ERROR);
+        }
     }
 }

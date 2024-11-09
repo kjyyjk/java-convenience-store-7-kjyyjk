@@ -24,6 +24,7 @@ public class StoreManager {
         List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
         for (PurchaseItem purchaseItem : purchaseItems) {
             Product product = products.get(purchaseItem.getName());
+            product.validateExceedQuantity(purchaseItem.getQuantity());
         }
     }
 

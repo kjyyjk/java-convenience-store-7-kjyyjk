@@ -12,4 +12,8 @@ public class PurchaseItem {
     public String getName() {
         return name;
     }
+
+    public int getQuantity() {
+        return quantity;
+    }
 }
