@@ -8,4 +8,8 @@ public class PurchaseItem {
         this.name = name;
         this.quantity = quantity;
     }
+
+    public String getName() {
+        return name;
+    }
 }

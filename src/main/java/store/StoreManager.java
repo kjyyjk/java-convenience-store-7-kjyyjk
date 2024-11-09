@@ -17,7 +17,14 @@ public class StoreManager {
         Promotions promotions = getPromotions();
         Map<String, Product> products = getProducts(promotions);
         printProducts(products);
+        purchase(products);
+    }
+
+    private void purchase(Map<String, Product> products) {
         List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
+        for (PurchaseItem purchaseItem : purchaseItems) {
+            Product product = products.get(purchaseItem.getName());
+        }
     }
 
     private static Promotions getPromotions() {
