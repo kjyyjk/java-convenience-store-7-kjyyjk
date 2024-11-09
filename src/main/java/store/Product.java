@@ -74,4 +74,15 @@ public class Product {
     public int getNoPromotionQuantity(final int purchaseQuantity) {
         return promotion.getNoPromotionQuantity(promotionQuantity, purchaseQuantity);
     }
+
+    public void decreaseQuantity(int purchaseQuantity) {
+        validateExceedQuantity(purchaseQuantity);
+        if (promotionQuantity > purchaseQuantity) {
+            promotionQuantity -= purchaseQuantity;
+            return;
+        }
+
+        generalQuantity -= (purchaseQuantity - promotionQuantity);
+        promotionQuantity = 0;
+    }
 }

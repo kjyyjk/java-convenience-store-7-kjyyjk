@@ -49,8 +49,8 @@ public class StoreManager {
                             }
                         }
                     }
-
                 }
+                product.decreaseQuantity(purchaseItem.getQuantity());
             }
         } catch (IllegalArgumentException e) {
             OutputView.printError(e);
