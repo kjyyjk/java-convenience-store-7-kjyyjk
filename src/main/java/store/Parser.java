@@ -113,30 +113,7 @@ public class Parser {
         return new Promotion(name, buyQuantity, bonusQuantity, startDate, endDate);
     }
 
-    public static boolean parseExtraBonusQuantity(final String input) {
-        if (input.equals("Y")) {
-            return true;
-        }
-
-        if (input.equals("N")) {
-            return false;
-        }
-
-        throw new IllegalArgumentException("잘못된 입력입니다. 다시 입력해 주세요.");
-    }
-
-    public static boolean parseNoPromotionQuantity(final String input) {
-        if (input.equals("Y")) {
-            return true;
-        }
-
-        if (input.equals("N")) {
-            return false;
-        }
-
-        throw new IllegalArgumentException("잘못된 입력입니다. 다시 입력해 주세요.");
-    }
-    public static boolean parseMembershipDiscount(final String input) {
+    public static boolean parseYesOrNoToBoolean(final String input) {
         if (input.equals("Y")) {
             return true;
         }

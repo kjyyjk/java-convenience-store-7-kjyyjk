@@ -1,18 +1,18 @@
 package store;
 
-import static store.Parser.parseExtraBonusQuantity;
-import static store.Parser.parseMembershipDiscount;
-import static store.Parser.parseNoPromotionQuantity;
 import static store.Parser.parsePromotions;
 import static store.Parser.parsePurchaseItems;
+import static store.Parser.parseYesOrNoToBoolean;
 import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
 import static store.StoreFileWriter.updateProducts;
+import static store.view.InputView.readAdditionalPurchase;
 import static store.view.InputView.readExtraBonusQuantity;
 import static store.view.InputView.readMembershipDiscount;
 import static store.view.InputView.readNoPromotionQuantity;
 import static store.view.InputView.readPurchaseItems;
+import static store.view.OutputView.printError;
 import static store.view.OutputView.printProducts;
 import static store.view.OutputView.printReceipt;
 
@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import store.view.OutputView;
 
 public class StoreManager {
     public void run() {
@@ -35,6 +34,10 @@ public class StoreManager {
             updateProducts(products);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+
+        if (getAdditionalPurchase()) {
+            run();
         }
     }
 
@@ -53,13 +56,13 @@ public class StoreManager {
                 if (doingPromotion) {
                     int extraBonusQuantity = product.getExtraBonusQuantity(purchaseQuantity);
                     if (extraBonusQuantity > 0) {
-                        if (parseExtraBonusQuantity(readExtraBonusQuantity(productName, extraBonusQuantity))) {
+                        if (parseYesOrNoToBoolean(readExtraBonusQuantity(productName, extraBonusQuantity))) {
                             purchaseQuantity += extraBonusQuantity;
                         }
                     } else {
                         int noPromotionQuantity = product.getNoPromotionQuantity(purchaseQuantity);
                         if (noPromotionQuantity > 0) {
-                            if (!parseNoPromotionQuantity(readNoPromotionQuantity(productName, noPromotionQuantity))) {
+                            if (!parseYesOrNoToBoolean(readNoPromotionQuantity(productName, noPromotionQuantity))) {
                                 purchaseQuantity -= noPromotionQuantity;
                             }
                         }
@@ -73,10 +76,10 @@ public class StoreManager {
                         purchaseQuantity, promotionAppliedQuantity, totalBonusQuantity);
                 purchaseHistory.add(purchaseHistoryDetail);
             }
-            boolean membershipDiscount = parseMembershipDiscount(readMembershipDiscount());
+            boolean membershipDiscount = parseYesOrNoToBoolean(readMembershipDiscount());
             return new PurchaseHistory(purchaseHistory, membershipDiscount);
         } catch (IllegalArgumentException e) {
-            OutputView.printError(e);
+            printError(e);
             return purchase(products);
         }
     }
@@ -100,4 +103,14 @@ public class StoreManager {
     private LocalDate getTodayLocalDate() {
         return DateTimes.now().toLocalDate();
     }
+
+    private boolean getAdditionalPurchase() {
+        try {
+            return parseYesOrNoToBoolean(readAdditionalPurchase());
+        } catch (IllegalArgumentException e) {
+            printError(e);
+            return getAdditionalPurchase();
+        }
+    }
+
 }
