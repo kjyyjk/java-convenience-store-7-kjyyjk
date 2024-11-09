@@ -20,4 +20,8 @@ public class PurchaseItem {
     public void increaseQuantity(int quantity) {
         this.quantity += quantity;
     }
+
+    public void decreaseQuantity(int quantity) {
+        this.quantity -= quantity;
+    }
 }

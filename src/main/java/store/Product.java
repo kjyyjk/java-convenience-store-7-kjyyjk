@@ -70,4 +70,8 @@ public class Product {
         }
         return 0;
     }
+
+    public int getNoPromotionQuantity(final int purchaseQuantity) {
+        return promotion.getNoPromotionQuantity(promotionQuantity, purchaseQuantity);
+    }
 }
