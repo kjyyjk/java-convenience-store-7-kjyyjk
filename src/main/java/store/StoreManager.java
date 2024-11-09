@@ -8,7 +8,9 @@ import static store.StoreFileReader.readPromotions;
 import static store.view.InputView.readPurchaseItems;
 import static store.view.OutputView.printProducts;
 
+import camp.nextstep.edu.missionutils.DateTimes;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import store.view.OutputView;
@@ -27,6 +29,7 @@ public class StoreManager {
             for (PurchaseItem purchaseItem : purchaseItems) {
                 Product product = products.get(purchaseItem.getName());
                 product.validateExceedQuantity(purchaseItem.getQuantity());
+                boolean doingPromotion = product.isDoingPromotion(getTodayLocalDate());
             }
         } catch (IllegalArgumentException e) {
             OutputView.printError(e);
@@ -48,5 +51,9 @@ public class StoreManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private LocalDate getTodayLocalDate() {
+        return DateTimes.now().toLocalDate();
     }
 }

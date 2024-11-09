@@ -21,4 +21,11 @@ public class Promotion {
     public String getName() {
         return name;
     }
+
+    public boolean isDoing(LocalDate date) {
+        if (date.isAfter(endDate) || date.isBefore(startDate)) {
+            return false;
+        }
+        return true;
+    }
 }

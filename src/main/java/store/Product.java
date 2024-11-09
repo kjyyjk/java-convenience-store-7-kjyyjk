@@ -1,5 +1,7 @@
 package store;
 
+import java.time.LocalDate;
+
 public class Product {
     private String name;
     private int price;
@@ -55,5 +57,9 @@ public class Product {
         if (generalQuantity + promotionQuantity < quantity) {
             throw new IllegalArgumentException(EXCEED_QUANTITY_ERROR);
         }
+    }
+
+    public boolean isDoingPromotion(LocalDate date) {
+        return promotion.isDoing(date);
     }
 }
