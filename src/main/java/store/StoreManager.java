@@ -11,6 +11,7 @@ import static store.view.OutputView.printProducts;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import store.view.OutputView;
 
 public class StoreManager {
     public void run() {
@@ -21,10 +22,15 @@ public class StoreManager {
     }
 
     private void purchase(Map<String, Product> products) {
-        List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
-        for (PurchaseItem purchaseItem : purchaseItems) {
-            Product product = products.get(purchaseItem.getName());
-            product.validateExceedQuantity(purchaseItem.getQuantity());
+        try {
+            List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
+            for (PurchaseItem purchaseItem : purchaseItems) {
+                Product product = products.get(purchaseItem.getName());
+                product.validateExceedQuantity(purchaseItem.getQuantity());
+            }
+        } catch (IllegalArgumentException e) {
+            OutputView.printError(e);
+            purchase(products);
         }
     }
 

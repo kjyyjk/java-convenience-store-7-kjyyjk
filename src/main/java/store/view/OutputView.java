@@ -5,6 +5,7 @@ import store.Product;
 
 public class OutputView {
     private static final String WELCOME_MESSAGE = "안녕하세요. W편의점입니다.\n현재 보유하고 있는 상품입니다.\n";
+    private static final String ERROR_MESSAGE_PREFIX = "[ERROR] ";
     private static final String PRINT_GENERAL_PRODUCT_FORMAT = "- %s %,d원 %s";
     private static final String PRINT_PROMOTION_PRODUCT_FORMAT = "- %s %,d원 %s %s";
     private static final String ZERO_QUANTITY = "재고 없음";
@@ -43,5 +44,10 @@ public class OutputView {
             return ZERO_QUANTITY;
         }
         return String.valueOf(quantity) + QUANTITY_UNIT;
+    }
+
+    public static void printError(IllegalArgumentException e) {
+        String message = ERROR_MESSAGE_PREFIX + e.getMessage();
+        System.out.println(message);
     }
 }
