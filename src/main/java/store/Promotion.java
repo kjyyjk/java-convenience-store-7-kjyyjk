@@ -29,7 +29,7 @@ public class Promotion {
         return true;
     }
 
-    public int getExtraQuantity(final int purchaseQuantity) {
+    public int getExtraBonusQuantity(final int purchaseQuantity) {
         if ((purchaseQuantity % (buyQuantity + bonusQuantity)) >= buyQuantity) {
             return bonusQuantity;
         }
@@ -38,5 +38,9 @@ public class Promotion {
 
     public int getNoPromotionQuantity(final int promotionQuantity, final int purchaseQuantity) {
         return purchaseQuantity - ((buyQuantity + bonusQuantity) * (promotionQuantity / (buyQuantity + bonusQuantity)));
+    }
+
+    public int getTotalBonusQuantity(final int purchaseQuantity) {
+        return (purchaseQuantity / (buyQuantity + bonusQuantity)) * bonusQuantity;
     }
 }

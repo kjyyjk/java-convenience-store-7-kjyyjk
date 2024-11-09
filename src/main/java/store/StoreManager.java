@@ -7,7 +7,7 @@ import static store.Parser.parsePurchaseItems;
 import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
-import static store.view.InputView.readExtraPromotionQuantity;
+import static store.view.InputView.readExtraBonusQuantity;
 import static store.view.InputView.readNoPromotionQuantity;
 import static store.view.InputView.readPurchaseItems;
 import static store.view.OutputView.printProducts;
@@ -15,6 +15,7 @@ import static store.view.OutputView.printProducts;
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import store.view.OutputView;
@@ -27,34 +28,45 @@ public class StoreManager {
         purchase(products);
     }
 
-    private void purchase(Map<String, Product> products) {
+    private List<PurchaseHistoryDetail> purchase(Map<String, Product> products) {
         try {
             List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
+            List<PurchaseHistoryDetail> purchaseHistory = new ArrayList<>();
             for (PurchaseItem purchaseItem : purchaseItems) {
+                int totalBonusQuantity = 0;
+                int purchaseQuantity = purchaseItem.getQuantity();
                 Product product = products.get(purchaseItem.getName());
-                product.validateExceedQuantity(purchaseItem.getQuantity());
+                String productName = product.getName();
+                product.validateExceedQuantity(purchaseQuantity);
                 boolean doingPromotion = product.isDoingPromotion(getTodayLocalDate());
                 if (doingPromotion) {
-                    int extraPromotionQuantity = product.getExtraPromotionQuantity(purchaseItem.getQuantity());
-                    if (extraPromotionQuantity > 0) {
-                        if (parseExtraBonusQuantity(readExtraPromotionQuantity(product.getName(), extraPromotionQuantity))) {
-                            purchaseItem.increaseQuantity(extraPromotionQuantity);
+                    int extraBonusQuantity = product.getExtraBonusQuantity(purchaseQuantity);
+                    if (extraBonusQuantity > 0) {
+                        if (parseExtraBonusQuantity(readExtraBonusQuantity(productName, extraBonusQuantity))) {
+                            purchaseQuantity += extraBonusQuantity;
                         }
                     } else {
-                        int noPromotionQuantity = product.getNoPromotionQuantity(purchaseItem.getQuantity());
+                        int noPromotionQuantity = product.getNoPromotionQuantity(purchaseQuantity);
                         if (noPromotionQuantity > 0) {
                             if (!parseNoPromotionQuantity(
-                                    readNoPromotionQuantity(product.getName(), noPromotionQuantity))) {
-                                purchaseItem.decreaseQuantity(noPromotionQuantity);
+                                    readNoPromotionQuantity(productName, noPromotionQuantity))) {
+                                purchaseQuantity -= noPromotionQuantity;
                             }
                         }
                     }
+
+                    totalBonusQuantity = product.getTotalBonusQuantity(purchaseQuantity);
                 }
-                product.decreaseQuantity(purchaseItem.getQuantity());
+                product.decreaseQuantity(purchaseQuantity);
+                PurchaseHistoryDetail purchaseHistoryDetail = new PurchaseHistoryDetail(productName, product.getPrice(),
+                        purchaseQuantity, totalBonusQuantity);
+                purchaseHistory.add(purchaseHistoryDetail);
             }
+
+            return purchaseHistory;
         } catch (IllegalArgumentException e) {
             OutputView.printError(e);
-            purchase(products);
+            return purchase(products);
         }
     }
 

@@ -63,10 +63,10 @@ public class Product {
         return promotion.isDoing(date);
     }
 
-    public int getExtraPromotionQuantity(final int purchaseQuantity) {
-        int extraQuantity = promotion.getExtraQuantity(purchaseQuantity);
-        if (extraQuantity + purchaseQuantity <= promotionQuantity) {
-            return extraQuantity;
+    public int getExtraBonusQuantity(final int purchaseQuantity) {
+        int extraBonusQuantity = promotion.getExtraBonusQuantity(purchaseQuantity);
+        if (extraBonusQuantity + purchaseQuantity <= promotionQuantity) {
+            return extraBonusQuantity;
         }
         return 0;
     }
@@ -75,7 +75,7 @@ public class Product {
         return promotion.getNoPromotionQuantity(promotionQuantity, purchaseQuantity);
     }
 
-    public void decreaseQuantity(int purchaseQuantity) {
+    public void decreaseQuantity(final int purchaseQuantity) {
         validateExceedQuantity(purchaseQuantity);
         if (promotionQuantity > purchaseQuantity) {
             promotionQuantity -= purchaseQuantity;
@@ -84,5 +84,12 @@ public class Product {
 
         generalQuantity -= (purchaseQuantity - promotionQuantity);
         promotionQuantity = 0;
+    }
+
+    public int getTotalBonusQuantity(final int purchaseQuantity) {
+        if (purchaseQuantity <= promotionQuantity) {
+            return promotion.getTotalBonusQuantity(purchaseQuantity);
+        }
+        return promotion.getTotalBonusQuantity(promotionQuantity);
     }
 }
