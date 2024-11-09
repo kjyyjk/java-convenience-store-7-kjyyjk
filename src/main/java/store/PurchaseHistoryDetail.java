@@ -19,4 +19,12 @@ public class PurchaseHistoryDetail {
     public int calculatePurchaseAmount() {
         return productPrice * totalQuantity;
     }
+
+    public int calculatePromotionDiscountAmount() {
+        return productPrice * bonusQuantity;
+    }
+
+    public int calculatePromotionAppliedAmount() {
+        return productPrice * promotionAppliedQuantity;
+    }
 }

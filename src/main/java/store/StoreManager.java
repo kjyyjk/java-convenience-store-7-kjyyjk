@@ -27,10 +27,10 @@ public class StoreManager {
         Promotions promotions = getPromotions();
         Map<String, Product> products = getProducts(promotions);
         printProducts(products);
-        purchase(products);
+        PurchaseHistory purchaseHistory = purchase(products);
     }
 
-    private List<PurchaseHistoryDetail> purchase(Map<String, Product> products) {
+    private PurchaseHistory purchase(Map<String, Product> products) {
         try {
             List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
             List<PurchaseHistoryDetail> purchaseHistory = new ArrayList<>();
@@ -66,7 +66,7 @@ public class StoreManager {
                 purchaseHistory.add(purchaseHistoryDetail);
             }
             boolean membershipDiscount = parseMembershipDiscount(readMembershipDiscount());
-            return purchaseHistory;
+            return new PurchaseHistory(purchaseHistory, membershipDiscount);
         } catch (IllegalArgumentException e) {
             OutputView.printError(e);
             return purchase(products);
