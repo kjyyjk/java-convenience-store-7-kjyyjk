@@ -17,6 +17,7 @@ public class Parser {
     private static final String PURCHASE_ITEM_PREFIX = "[";
     private static final String PURCHASE_ITEM_SUFFIX = "]";
     private static final String INVALID_PURCHASE_ITEM_FORMAT = "올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.";
+    private static final String INVALID_INPUT_ERROR_MESSAGE = "잘못된 입력입니다. 다시 입력해 주세요.";
 
     public static Map<String, Promotion> parsePromotions(final BufferedReader bufferedReader) throws IOException {
         Map<String, Promotion> promotions = new HashMap<>();
@@ -96,7 +97,11 @@ public class Parser {
     }
 
     public static int parseInt(final String number) {
-        return Integer.parseInt(number);
+        try {
+            return Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(INVALID_INPUT_ERROR_MESSAGE);
+        }
     }
 
     public static LocalDate parseLocalDate(final String date) {
@@ -122,6 +127,6 @@ public class Parser {
             return false;
         }
 
-        throw new IllegalArgumentException("잘못된 입력입니다. 다시 입력해 주세요.");
+        throw new IllegalArgumentException(INVALID_INPUT_ERROR_MESSAGE);
     }
 }

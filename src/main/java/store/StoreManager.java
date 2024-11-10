@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 public class StoreManager {
+
+    private static final String NOT_EXIST_PRODUCT_ERROR_MESSAGE = "존재하지 않는 상품입니다. 다시 입력해 주세요.";
+
     public void run() {
         Promotions promotions = getPromotions();
         Map<String, Product> products = getProducts(promotions);
@@ -49,8 +52,8 @@ public class StoreManager {
                 int totalBonusQuantity = 0;
                 int promotionAppliedQuantity = 0;
                 int purchaseQuantity = purchaseItem.getQuantity();
-                String productName = purchaseItem.getName();
-                Product product = products.get(purchaseItem.getName());
+                Product product = getProductByName(products, purchaseItem.getName());
+                String productName = product.getName();
                 product.validateExceedQuantity(purchaseQuantity);
                 boolean doingPromotion = product.isDoingPromotion(getTodayLocalDate());
                 if (doingPromotion) {
@@ -82,7 +85,15 @@ public class StoreManager {
             return purchase(products);
         }
     }
-    
+
+    private Product getProductByName(Map<String, Product> products, String name) {
+        Product product = products.getOrDefault(name, null);
+        if (product == null) {
+            throw new IllegalArgumentException(NOT_EXIST_PRODUCT_ERROR_MESSAGE);
+        }
+        return product;
+    }
+
     private static Promotions getPromotions() {
         try {
             return new Promotions(parsePromotions(readPromotions()));
