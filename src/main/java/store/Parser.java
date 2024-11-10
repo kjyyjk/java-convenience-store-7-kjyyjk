@@ -29,7 +29,7 @@ public class Parser {
         return Collections.unmodifiableMap(promotions);
     }
 
-    public static Map<String, Product> parseProducts(final BufferedReader bufferedReader, final Promotions promotions)
+    public static Map<String, Product> parseProducts(final BufferedReader bufferedReader, final Map<String, Promotion> promotions)
             throws IOException {
         Map<String, Product> products = new HashMap<>();
         String productInformation = bufferedReader.readLine();
@@ -41,11 +41,11 @@ public class Parser {
         return Collections.unmodifiableMap(products);
     }
 
-    private static Product getProduct(Promotions promotions, Map<String, Product> products, String[] split) {
+    private static Product getProduct(Map<String, Promotion> promotions, Map<String, Product> products, String[] split) {
         String name = split[0];
         int price = parseInt(split[1]);
         int quantity = parseInt(split[2]);
-        Promotion promotion = promotions.get(split[3]);
+        Promotion promotion = promotions.getOrDefault(split[3], null);
         Product product = getProduct(products, name, price);
         increaseProductQuantity(product, promotion, quantity);
         return product;

@@ -1,12 +1,7 @@
 package store;
 
-import static store.Parser.parsePromotions;
 import static store.Parser.parsePurchaseItems;
 import static store.Parser.parseYesOrNoToBoolean;
-import static store.StoreFileReader.readProducts;
-import static store.Parser.parseProducts;
-import static store.StoreFileReader.readPromotions;
-import static store.StoreFileWriter.writeProducts;
 import static store.view.InputView.readAdditionalPurchase;
 import static store.view.InputView.readPurchaseExtraPromotionQuantity;
 import static store.view.InputView.readGetMembershipDiscount;
@@ -17,7 +12,6 @@ import static store.view.OutputView.printProducts;
 import static store.view.OutputView.printReceipt;
 
 import camp.nextstep.edu.missionutils.DateTimes;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +21,12 @@ public class StoreManager {
 
     private static final String NOT_EXIST_PRODUCT_ERROR_MESSAGE = "존재하지 않는 상품입니다. 다시 입력해 주세요.";
 
-    public void run() {
-        Promotions promotions = getPromotions();
-        Map<String, Product> products = getProducts(promotions);
+    public void run(final Map<String, Product> products) {
         printProducts(products);
         PurchaseHistory purchaseHistory = purchase(products);
         printReceipt(purchaseHistory);
-        updateProducts(products);
         if (isWillAdditionalPurchase()) {
-            run();
-        }
-    }
-
-    private void updateProducts(Map<String, Product> products) {
-        try {
-            writeProducts(products);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            run(products);
         }
     }
 
@@ -117,22 +100,6 @@ public class StoreManager {
             throw new IllegalArgumentException(NOT_EXIST_PRODUCT_ERROR_MESSAGE);
         }
         return product;
-    }
-
-    private static Promotions getPromotions() {
-        try {
-            return new Promotions(parsePromotions(readPromotions()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Map<String, Product> getProducts(final Promotions promotions) {
-        try {
-            return parseProducts(readProducts(), promotions);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private LocalDate getTodayLocalDate() {
