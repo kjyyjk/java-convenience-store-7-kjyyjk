@@ -14,16 +14,16 @@ public class OutputView {
     private static final String PRINT_PROMOTION_PRODUCT_FORMAT = "- %s %,d원 %s %s";
     private static final String ZERO_QUANTITY = "재고 없음";
     private static final String QUANTITY_UNIT = "개";
-    private static final String PRINT_RECEIPT_HEAD = "\n==============W 편의점================";
-    private static final String PRINT_RECEIPT_PURCHASE_HISTORY_DETAIL = "상품명\t\t수량\t금액";
-    private static final String PRINT_RECEIPT_PURCHASE_HISTORY_DETAIL_FORMAT = "%s\t\t%d \t%,d";
-    private static final String PRINT_RECEIPT_PROMOTION_MESSAGE = "=============증\t정===============";
-    private static final String PRINT_RECEIPT_PROMOTION_FORMAT = "%s		%d";
-    private static final String PRINT_RECEIPT_PROMOTION_BORDER = "====================================";
-    private static final String PRINT_RECEIPT_TOTAL_PURCHASE_AMOUNT_FORMAT = "총구매액\t\t%d\t%,d";
-    private static final String PRINT_RECEIPT_PROMOTION_DISCOUNT_AMOUNT_FORMAT = "행사할인\t\t\t-%,d";
-    private static final String PRINT_RECEIPT_MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT = "멤버십할인\t\t\t-%,d";
-    private static final String PRINT_RECEIPT_PAY_AMOUNT_FORMAT = "내실돈\t\t\t %,d";
+    private static final String RECEIPT_HEAD = "\n==============W 편의점================";
+    private static final String RECEIPT_PURCHASE_HISTORY_DETAIL = "상품명           수량           금액";
+    private static final String RECEIPT_PURCHASE_HISTORY_DETAIL_FORMAT = "%-13s%3d            %,-6d";
+    private static final String RECEIPT_PROMOTION_MESSAGE = "=============증\t\t정===============";
+    private static final String RECEIPT_PROMOTION_FORMAT = "%-13s%3d";
+    private static final String RECEIPT_PROMOTION_BORDER = "====================================";
+    private static final String RECEIPT_TOTAL_PURCHASE_AMOUNT_FORMAT = "총구매액%12d            %,-6d";
+    private static final String RECEIPT_PROMOTION_DISCOUNT_AMOUNT_FORMAT = "행사할인                        -%,-6d";
+    private static final String RECEIPT_MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT = "멤버십할인                       -%,-6d";
+    private static final String RECEIPT_PAY_AMOUNT_FORMAT = "내실돈                          %,-6d";
 
     public static void printProducts(final Products products) {
         System.out.println(WELCOME_MESSAGE);
@@ -64,20 +64,47 @@ public class OutputView {
     }
 
     public static void printReceipt(final PurchaseHistory purchaseHistory) {
-        System.out.println(PRINT_RECEIPT_HEAD);
-        System.out.println(PRINT_RECEIPT_PURCHASE_HISTORY_DETAIL);
+        System.out.println(RECEIPT_HEAD);
+        pringPurchaseHistory(purchaseHistory);
+        printReceiptPromotion(purchaseHistory);
+        printTotalPurchaseAmount(purchaseHistory);
+        printDiscountAmount(purchaseHistory);
+        printPayAmount(purchaseHistory);
+    }
+
+    private static void printPayAmount(PurchaseHistory purchaseHistory) {
+        int payAmount = purchaseHistory.calculatePayAmount();
+        System.out.println(RECEIPT_PAY_AMOUNT_FORMAT.formatted(payAmount));
+    }
+
+    private static void printDiscountAmount(PurchaseHistory purchaseHistory) {
+        int promotionDiscountAmount = purchaseHistory.calculatePromotionDiscountAmount();
+        int membershipDiscountAmount = purchaseHistory.calculateMembershipDiscountAmount();
+        System.out.println(RECEIPT_PROMOTION_DISCOUNT_AMOUNT_FORMAT.formatted(promotionDiscountAmount));
+        System.out.println(RECEIPT_MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT.formatted(membershipDiscountAmount));
+    }
+
+    private static void printTotalPurchaseAmount(final PurchaseHistory purchaseHistory) {
+        int totalPurchaseQuantity = purchaseHistory.calculateTotalPurchaseQuantity();
+        int totalPurchaseAmount = purchaseHistory.calculateTotalPurchaseAmount();
+        System.out.println(RECEIPT_TOTAL_PURCHASE_AMOUNT_FORMAT.formatted(totalPurchaseQuantity, totalPurchaseAmount));
+    }
+
+    private static void pringPurchaseHistory(final PurchaseHistory purchaseHistory) {
+        System.out.println(RECEIPT_PURCHASE_HISTORY_DETAIL);
         for (PurchaseHistoryDetail detail : purchaseHistory.getPurchaseHistoryDetails()) {
-            System.out.println(PRINT_RECEIPT_PURCHASE_HISTORY_DETAIL_FORMAT.formatted(detail.getProductName(), detail.getTotalQuantity(), detail.getProductPrice()));
+            System.out.println(RECEIPT_PURCHASE_HISTORY_DETAIL_FORMAT.formatted(detail.getProductName(),
+                    detail.getTotalQuantity(), detail.getProductPrice()));
         }
-        System.out.println(PRINT_RECEIPT_PROMOTION_MESSAGE);
+    }
+
+    private static void printReceiptPromotion(final PurchaseHistory purchaseHistory) {
+        System.out.println(RECEIPT_PROMOTION_MESSAGE);
         for (PurchaseHistoryDetail detail : purchaseHistory.getBonusPurchaseHistoryDetails()) {
-            System.out.println(PRINT_RECEIPT_PROMOTION_FORMAT.formatted(detail.getProductName(), detail.getBonusQuantity()));
+            System.out.println(
+                    RECEIPT_PROMOTION_FORMAT.formatted(detail.getProductName(), detail.getBonusQuantity()));
         }
-        System.out.println(PRINT_RECEIPT_PROMOTION_BORDER);
-        System.out.println(PRINT_RECEIPT_TOTAL_PURCHASE_AMOUNT_FORMAT.formatted(purchaseHistory.calculateTotalPurchaseQuantity(), purchaseHistory.calculateTotalPurchaseAmount()));
-        System.out.println(PRINT_RECEIPT_PROMOTION_DISCOUNT_AMOUNT_FORMAT.formatted(purchaseHistory.calculatePromotionDiscountAmount()));
-        System.out.println(PRINT_RECEIPT_MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT.formatted(purchaseHistory.calculateMembershipDiscountAmount()));
-        System.out.println(PRINT_RECEIPT_PAY_AMOUNT_FORMAT.formatted(purchaseHistory.calculatePayAmount()));
+        System.out.println(RECEIPT_PROMOTION_BORDER);
     }
 
     public static void printError(final IllegalArgumentException e) {
