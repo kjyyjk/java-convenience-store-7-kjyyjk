@@ -7,10 +7,10 @@ public class PurchaseHistoryDetail {
     private final int promotionAppliedQuantity;
     private final int bonusQuantity;
 
-    public PurchaseHistoryDetail(final Product product, final int totalQuantity,
+    public PurchaseHistoryDetail(final String productName, final int productPrice, final int totalQuantity,
                                  final int promotionAppliedQuantity, final int bonusQuantity) {
-        this.productName = product.getName();
-        this.productPrice = product.getPrice();
+        this.productName = productName;
+        this.productPrice = productPrice;
         this.totalQuantity = totalQuantity;
         this.promotionAppliedQuantity = promotionAppliedQuantity;
         this.bonusQuantity = bonusQuantity;

@@ -9,10 +9,13 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import store.product.GeneralProduct;
+import store.product.PromotionProduct;
 
 public class FileInputParser {
     private static final String PRODUCT_INFORMATION_DELIMITER = ",";
     private static final String PROMOTION_INFORMATION_DELIMITER = ",";
+
     public static Map<String, Promotion> parsePromotions(final BufferedReader bufferedReader) throws IOException {
         Map<String, Promotion> promotions = new HashMap<>();
         String promotionInformation = bufferedReader.readLine();
@@ -33,42 +36,50 @@ public class FileInputParser {
         return new Promotion(name, buyQuantity, bonusQuantity, startDate, endDate);
     }
 
-    public static Map<String, Product> parseProducts(final BufferedReader bufferedReader, final Map<String, Promotion> promotions)
+    public static Map<String, PromotionProduct> parsePromotionProducts(final BufferedReader bufferedReader,
+                                                                       final Map<String, Promotion> promotions)
             throws IOException {
-        Map<String, Product> products = new HashMap<>();
+        Map<String, PromotionProduct> promotionProducts = new HashMap<>();
         String productInformation = bufferedReader.readLine();
         while ((productInformation = bufferedReader.readLine()) != null) {
             String[] split = productInformation.split(PRODUCT_INFORMATION_DELIMITER);
-            Product product = getProduct(promotions, products, split);
-            products.put(product.getName(), product);
+            if (split[3].equals("null")) {
+                continue;
+            }
+            PromotionProduct promotionProduct = getPromotionProduct(promotions, split);
+            promotionProducts.put(promotionProduct.getName(), promotionProduct);
         }
-        return Collections.unmodifiableMap(products);
+        return Collections.unmodifiableMap(promotionProducts);
     }
 
-    private static Product getProduct(Map<String, Promotion> promotions, Map<String, Product> products, String[] split) {
+    private static PromotionProduct getPromotionProduct(final Map<String, Promotion> promotions, final String[] split) {
         String name = split[0];
         int price = parseInt(split[1]);
         int quantity = parseInt(split[2]);
-        Promotion promotion = promotions.getOrDefault(split[3], null);
-        Product product = getProduct(products, name, price);
-        increaseProductQuantity(product, promotion, quantity);
-        return product;
+        String promotionName = split[3];
+        Promotion promotion = promotions.get(promotionName);
+        return new PromotionProduct(name, price, quantity, promotion);
     }
 
-    private static Product getProduct(Map<String, Product> products, String name, int price) {
-        if (products.containsKey(name)) {
-            return products.get(name);
+    public static Map<String, GeneralProduct> parseGeneralProducts(final BufferedReader bufferedReader)
+            throws IOException {
+        Map<String, GeneralProduct> generalProducts = new HashMap<>();
+        String productInformation = bufferedReader.readLine();
+        while ((productInformation = bufferedReader.readLine()) != null) {
+            String[] split = productInformation.split(PRODUCT_INFORMATION_DELIMITER);
+            if (!split[3].equals("null")) {
+                continue;
+            }
+            GeneralProduct generalProduct = getGeneralProduct(split);
+            generalProducts.put(generalProduct.getName(), generalProduct);
         }
-        return new Product(name, price);
+        return Collections.unmodifiableMap(generalProducts);
     }
 
-    private static void increaseProductQuantity(Product product, Promotion promotion, int quantity) {
-        if (promotion == null) {
-            product.increaseGeneralQuantity(quantity);
-            return;
-        }
-
-        product.doPromotion(promotion);
-        product.increasePromotionQuantity(quantity);
+    private static GeneralProduct getGeneralProduct(final String[] split) {
+        String name = split[0];
+        int price = parseInt(split[1]);
+        int quantity = parseInt(split[2]);
+        return new GeneralProduct(name, price, quantity);
     }
 }

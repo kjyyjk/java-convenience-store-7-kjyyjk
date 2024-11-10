@@ -1,9 +1,11 @@
 package store.view;
 
-import java.util.Map;
-import store.Product;
 import store.PurchaseHistory;
 import store.PurchaseHistoryDetail;
+import store.product.GeneralProduct;
+import store.product.Product;
+import store.product.Products;
+import store.product.PromotionProduct;
 
 public class OutputView {
     private static final String WELCOME_MESSAGE = "\n안녕하세요. W편의점입니다.\n현재 보유하고 있는 상품입니다.\n";
@@ -23,34 +25,34 @@ public class OutputView {
     private static final String PRINT_RECEIPT_MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT = "멤버십할인\t\t\t-%,d";
     private static final String PRINT_RECEIPT_PAY_AMOUNT_FORMAT = "내실돈\t\t\t %,d";
 
-
-
-
-    public static void printProducts(final Map<String, Product> products) {
+    public static void printProducts(final Products products) {
         System.out.println(WELCOME_MESSAGE);
-        products.values()
+        products.getProducts()
                 .forEach(OutputView::printProduct);
     }
 
     private static void printProduct(final Product product) {
-        if (product.hasPromotion()) {
-            System.out.println(getPromotionProductMessage(product));
+        if (product instanceof PromotionProduct) {
+            System.out.println(getPromotionProductMessage((PromotionProduct) product));
         }
-        System.out.println(getGeneralProductMessage(product));
+
+        if (product instanceof GeneralProduct) {
+            System.out.println(getGeneralProductMessage((GeneralProduct) product));
+        }
     }
 
-    private static String getPromotionProductMessage(final Product product) {
+    private static String getPromotionProductMessage(final PromotionProduct product) {
         String name = product.getName();
         int price = product.getPrice();
-        String quantity = quantityToString(product.getPromotionQuantity());
+        String quantity = quantityToString(product.getQuantity());
         String promotionName = product.getPromotionName();
         return PRINT_PROMOTION_PRODUCT_FORMAT.formatted(name, price, quantity, promotionName);
     }
 
-    private static String getGeneralProductMessage(final Product product) {
+    private static String getGeneralProductMessage(final GeneralProduct product) {
         String name = product.getName();
         int price = product.getPrice();
-        String quantity = quantityToString(product.getGeneralQuantity());
+        String quantity = quantityToString(product.getQuantity());
         return PRINT_GENERAL_PRODUCT_FORMAT.formatted(name, price, quantity);
     }
 
