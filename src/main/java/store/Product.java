@@ -60,7 +60,10 @@ public class Product {
     }
 
     public boolean isDoingPromotion(final LocalDate date) {
-        return promotion.isDoing(date);
+        if (hasPromotion()) {
+            return promotion.isDoing(date);
+        }
+        return false;
     }
 
     public int getExtraBonusQuantity(final int purchaseQuantity) {
