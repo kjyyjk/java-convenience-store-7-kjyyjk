@@ -11,7 +11,7 @@ public class StoreFileWriter {
     private static final String PRODUCTS_FILE_FORMAT = "\n%s,%s,%s,%s";
     private static final String NO_PROMOTION_NAME = "null";
 
-    public static void updateProducts(Map<String, Product> products) throws IOException {
+    public static void writeProducts(Map<String, Product> products) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(PRODUCTS_FILE_PATH));
         writer.write(PRODUCTS_FILE_HEAD);
         for (Product product : products.values()) {

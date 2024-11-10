@@ -6,7 +6,7 @@ import static store.Parser.parseYesOrNoToBoolean;
 import static store.StoreFileReader.readProducts;
 import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
-import static store.StoreFileWriter.updateProducts;
+import static store.StoreFileWriter.writeProducts;
 import static store.view.InputView.readAdditionalPurchase;
 import static store.view.InputView.readPurchaseExtraPromotionQuantity;
 import static store.view.InputView.readGetMembershipDiscount;
@@ -33,57 +33,82 @@ public class StoreManager {
         printProducts(products);
         PurchaseHistory purchaseHistory = purchase(products);
         printReceipt(purchaseHistory);
-        try {
-            updateProducts(products);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        updateProducts(products);
         if (isWillAdditionalPurchase()) {
             run();
+        }
+    }
+
+    private void updateProducts(Map<String, Product> products) {
+        try {
+            writeProducts(products);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     private PurchaseHistory purchase(Map<String, Product> products) {
         try {
             List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
-            List<PurchaseHistoryDetail> purchaseHistory = new ArrayList<>();
-            for (PurchaseItem purchaseItem : purchaseItems) {
-                int totalBonusQuantity = 0;
-                int promotionAppliedQuantity = 0;
-                int purchaseQuantity = purchaseItem.getQuantity();
-                Product product = getProductByName(products, purchaseItem.getName());
-                String productName = product.getName();
-                product.validateExceedQuantity(purchaseQuantity);
-                boolean doingPromotion = product.isDoingPromotion(getTodayLocalDate());
-                if (doingPromotion) {
-                    int extraBonusQuantity = product.getExtraBonusQuantity(purchaseQuantity);
-                    if (extraBonusQuantity > 0) {
-                        if (isWillGetExtraBonusQuantity(productName, extraBonusQuantity)) {
-                            purchaseQuantity += extraBonusQuantity;
-                        }
-                    } else {
-                        int promotionNotAppliedQuantity = product.getNoPromotionQuantity(purchaseQuantity);
-                        if (promotionNotAppliedQuantity > 0) {
-                            if (!isWillPurchasePromotionNotAppliedQuantity(productName, promotionNotAppliedQuantity)) {
-                                purchaseQuantity -= promotionNotAppliedQuantity;
-                            }
-                        }
-                    }
-
-                    promotionAppliedQuantity = product.getPromotionAppliedQuantity(purchaseQuantity);
-                    totalBonusQuantity = product.getTotalBonusQuantity(purchaseQuantity);
-                }
-                product.decreaseQuantity(purchaseQuantity);
-                PurchaseHistoryDetail purchaseHistoryDetail = new PurchaseHistoryDetail(productName, product.getPrice(),
-                        purchaseQuantity, promotionAppliedQuantity, totalBonusQuantity);
-                purchaseHistory.add(purchaseHistoryDetail);
-            }
+            List<PurchaseHistoryDetail> purchaseHistory = purchaseProducts(products, purchaseItems);
             return new PurchaseHistory(purchaseHistory, isWillGetMembershipDiscount());
         } catch (IllegalArgumentException e) {
             printError(e);
             return purchase(products);
         }
+    }
+
+    private List<PurchaseHistoryDetail> purchaseProducts(Map<String, Product> products,
+                                                         List<PurchaseItem> purchaseItems) {
+        List<PurchaseHistoryDetail> purchaseHistory = new ArrayList<>();
+        for (PurchaseItem purchaseItem : purchaseItems) {
+            int purchaseQuantity = purchaseItem.getQuantity();
+            Product product = getProductByName(products, purchaseItem.getName());
+            PurchaseHistoryDetail purchaseHistoryDetail = updateProductQuantity(purchaseQuantity, product);
+            purchaseHistory.add(purchaseHistoryDetail);
+        }
+        return purchaseHistory;
+    }
+
+    private PurchaseHistoryDetail updateProductQuantity(int purchaseQuantity, Product product) {
+        int totalBonusQuantity = 0;
+        int promotionAppliedQuantity = 0;
+        product.validateExceedQuantity(purchaseQuantity);
+
+        int finalPurchaseQuantity = purchaseQuantity;
+        if (product.isDoingPromotion(getTodayLocalDate())) {
+            finalPurchaseQuantity = getFinalPurchaseQuantity(purchaseQuantity, product);
+            promotionAppliedQuantity = product.getPromotionAppliedQuantity(finalPurchaseQuantity);
+            totalBonusQuantity = product.getTotalBonusQuantity(finalPurchaseQuantity);
+        }
+        product.decreaseQuantity(finalPurchaseQuantity);
+        return new PurchaseHistoryDetail(product, finalPurchaseQuantity, promotionAppliedQuantity, totalBonusQuantity);
+    }
+
+    private int getFinalPurchaseQuantity(int purchaseQuantity, Product product) {
+        int extraBonusQuantity = product.getExtraBonusQuantity(purchaseQuantity);
+        if (extraBonusQuantity > 0) {
+            return purchaseQuantity + getExtraQuantity(product, extraBonusQuantity);
+        }
+        int promotionNotAppliedQuantity = product.getNoPromotionQuantity(purchaseQuantity);
+        if (promotionNotAppliedQuantity > 0) {
+            return purchaseQuantity - getExcludeQuantity(product, promotionNotAppliedQuantity);
+        }
+        return purchaseQuantity;
+    }
+
+    private int getExtraQuantity(Product product, int extraBonusQuantity) {
+        if (isWillGetExtraBonusQuantity(product.getName(), extraBonusQuantity)) {
+            return extraBonusQuantity;
+        }
+        return 0;
+    }
+
+    private int getExcludeQuantity(Product product, int promotionNotAppliedQuantity) {
+        if (isWillPurchasePromotionNotAppliedQuantity(product.getName(), promotionNotAppliedQuantity)) {
+            return 0;
+        }
+        return promotionNotAppliedQuantity;
     }
 
     private Product getProductByName(Map<String, Product> products, String name) {
@@ -123,7 +148,8 @@ public class StoreManager {
         }
     }
 
-    private boolean isWillPurchasePromotionNotAppliedQuantity(final String productName, final int promotionNotAppliedQuantity) {
+    private boolean isWillPurchasePromotionNotAppliedQuantity(final String productName,
+                                                              final int promotionNotAppliedQuantity) {
         try {
             return parseYesOrNoToBoolean(
                     readPurchasePromotionNotAppliedQuantity(productName, promotionNotAppliedQuantity));
