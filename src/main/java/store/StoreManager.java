@@ -1,7 +1,7 @@
 package store;
 
-import static store.Parser.parsePurchaseItems;
-import static store.Parser.parseYesOrNoToBoolean;
+import static store.InputParser.parsePurchaseItems;
+import static store.InputParser.parseYesOrNoToBoolean;
 import static store.view.InputView.readAdditionalPurchase;
 import static store.view.InputView.readPurchaseExtraPromotionQuantity;
 import static store.view.InputView.readGetMembershipDiscount;

@@ -1,7 +1,7 @@
 package store;
 
-import static store.Parser.parseProducts;
-import static store.Parser.parsePromotions;
+import static store.FileInputParser.parseProducts;
+import static store.FileInputParser.parsePromotions;
 import static store.StoreFileReader.readProducts;
 import static store.StoreFileReader.readPromotions;
 
@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class Application {
     public static void main(String[] args) {
-
         Map<String, Product> products = getProductsWithPromotion();
         new StoreManager().run(products);
     }
