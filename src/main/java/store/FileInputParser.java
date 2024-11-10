@@ -36,9 +36,9 @@ public class FileInputParser {
         return new Promotion(name, buyQuantity, bonusQuantity, startDate, endDate);
     }
 
-    public static Map<String, PromotionProduct> parsePromotionProducts(final BufferedReader bufferedReader,
-                                                                       final Map<String, Promotion> promotions)
-            throws IOException {
+    public static Map<String, PromotionProduct> parsePromotionProducts(
+            final BufferedReader bufferedReader,
+            final Map<String, Promotion> promotions) throws IOException {
         Map<String, PromotionProduct> promotionProducts = new HashMap<>();
         String productInformation = bufferedReader.readLine();
         while ((productInformation = bufferedReader.readLine()) != null) {

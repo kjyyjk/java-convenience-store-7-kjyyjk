@@ -1,5 +1,8 @@
 package store;
 
+import static store.ErrorMessage.INVALID_INPUT;
+import static store.ErrorMessage.INVALID_PURCHASE_ITEM_FORMAT;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +12,8 @@ public class InputParser {
     private static final String PURCHASE_ITEM_DELIMITER = "-";
     private static final String PURCHASE_ITEM_PREFIX = "[";
     private static final String PURCHASE_ITEM_SUFFIX = "]";
-    private static final String INVALID_PURCHASE_ITEM_FORMAT = "올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.";
-    private static final String INVALID_INPUT_ERROR_MESSAGE = "잘못된 입력입니다. 다시 입력해 주세요.";
+    private static final String TRUE_VALUE = "Y";
+    private static final String FALSE_VALUE = "N";
 
     public static List<PurchaseItem> parsePurchaseItems(final String input) {
         List<PurchaseItem> purchaseItems = new ArrayList<>();
@@ -23,6 +26,9 @@ public class InputParser {
     private static PurchaseItem parsePurchaseItem(final String purchaseItem) {
         validatePurchaseItemFormat(purchaseItem);
         String[] split = getPurchaseItemSubstring(purchaseItem).split(PURCHASE_ITEM_DELIMITER);
+        if (split.length != 2) {
+            throw new IllegalArgumentException(INVALID_PURCHASE_ITEM_FORMAT.getMessage());
+        }
         String name = split[0];
         int quantity = parseInt(split[1]);
         return new PurchaseItem(name, quantity);
@@ -30,7 +36,7 @@ public class InputParser {
 
     private static void validatePurchaseItemFormat(final String token) {
         if (!(token.startsWith(PURCHASE_ITEM_PREFIX) && token.endsWith(PURCHASE_ITEM_SUFFIX))) {
-            throw new IllegalArgumentException(INVALID_PURCHASE_ITEM_FORMAT);
+            throw new IllegalArgumentException(INVALID_PURCHASE_ITEM_FORMAT.getMessage());
         }
     }
 
@@ -44,7 +50,7 @@ public class InputParser {
         try {
             return Integer.parseInt(number);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(INVALID_INPUT_ERROR_MESSAGE);
+            throw new IllegalArgumentException(INVALID_INPUT.getMessage());
         }
     }
 
@@ -53,14 +59,14 @@ public class InputParser {
     }
 
     public static boolean parseYesOrNoToBoolean(final String input) {
-        if (input.equals("Y")) {
+        if (input.equals(TRUE_VALUE)) {
             return true;
         }
 
-        if (input.equals("N")) {
+        if (input.equals(FALSE_VALUE)) {
             return false;
         }
 
-        throw new IllegalArgumentException(INVALID_INPUT_ERROR_MESSAGE);
+        throw new IllegalArgumentException(INVALID_INPUT.getMessage());
     }
 }

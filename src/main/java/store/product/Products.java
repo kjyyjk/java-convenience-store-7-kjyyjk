@@ -1,5 +1,7 @@
 package store.product;
 
+import static store.ErrorMessage.EXCEED_QUANTITY_ERROR;
+import static store.ErrorMessage.NOT_EXIST_PRODUCT;
 import static store.InputParser.parseYesOrNoToBoolean;
 import static store.view.InputView.readPurchaseExtraPromotionQuantity;
 import static store.view.InputView.readPurchasePromotionNotAppliedQuantity;
@@ -15,8 +17,6 @@ import java.util.Map;
 import store.PurchaseHistoryDetail;
 
 public class Products {
-    private static final String NOT_EXIST_PRODUCT_ERROR_MESSAGE = "존재하지 않는 상품입니다. 다시 입력해 주세요.";
-    private static final String EXCEED_QUANTITY_ERROR = "재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
     private final Map<String, GeneralProduct> generalProducts;
     private final Map<String, PromotionProduct> promotionProducts;
 
@@ -30,13 +30,13 @@ public class Products {
         GeneralProduct generalProduct = getGeneralProductByName(productName);
         PromotionProduct promotionProduct = getPromotionProductByName(productName);
         if (generalProduct == null && promotionProduct == null) {
-            throw new IllegalArgumentException(NOT_EXIST_PRODUCT_ERROR_MESSAGE);
+            throw new IllegalArgumentException(NOT_EXIST_PRODUCT.getMessage());
         }
     }
 
     public void validateProductQuantity(final String productName, final int purchaseQuantity) {
         if (isExceedTotalQuantity(productName, purchaseQuantity)) {
-            throw new IllegalArgumentException(EXCEED_QUANTITY_ERROR);
+            throw new IllegalArgumentException(EXCEED_QUANTITY_ERROR.getMessage());
         }
     }
 
@@ -84,7 +84,7 @@ public class Products {
             restQuantity -= promotionProduct.decreaseQuantity(quantity);
         }
         if (restQuantity != 0) {
-            generalProduct.decreaseQuantity(quantity);
+            generalProduct.decreaseQuantity(restQuantity);
         }
     }
 
