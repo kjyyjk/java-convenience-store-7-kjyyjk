@@ -7,6 +7,7 @@ import static store.StoreFileReader.readProducts;
 import static store.StoreFileReader.readPromotions;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import store.product.GeneralProduct;
 import store.product.Products;
@@ -15,7 +16,9 @@ import store.product.PromotionProduct;
 public class Application {
     public static void main(String[] args) {
         Map<String, Promotion> promotions = getPromotions();
-        Products products = new Products(getGeneralProducts(), getPromotionProducts(promotions));
+        Map<String, PromotionProduct> promotionProducts = getPromotionProducts(promotions);
+        Map<String, GeneralProduct> generalProducts = getGeneralProducts(promotionProducts);
+        Products products = new Products(generalProducts, promotionProducts);
         new StoreManager().run(products);
     }
 
@@ -27,9 +30,10 @@ public class Application {
         }
     }
 
-    private static Map<String, GeneralProduct> getGeneralProducts() {
+    private static Map<String, GeneralProduct> getGeneralProducts(
+            final Map<String, PromotionProduct> promotionProducts) {
         try {
-            return parseGeneralProducts(readProducts());
+            return addBasicGeneralProducts(parseGeneralProducts(readProducts()), promotionProducts);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -41,5 +45,23 @@ public class Application {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Map<String, GeneralProduct> addBasicGeneralProducts(
+            final Map<String, GeneralProduct> generalProducts,
+            final Map<String, PromotionProduct> promotionProducts) {
+        promotionProducts.values()
+                .stream()
+                .filter(product -> isNotContains(generalProducts, product.getName()))
+                .forEach(product -> generalProducts.put(product.getName(), getBasicGeneralProduct(product)));
+        return Collections.unmodifiableMap(generalProducts);
+    }
+
+    private static boolean isNotContains(final Map<String, GeneralProduct> generalProducts, final String productName) {
+        return !generalProducts.containsKey(productName);
+    }
+
+    private static GeneralProduct getBasicGeneralProduct(PromotionProduct product) {
+        return new GeneralProduct(product.getName(), product.getPrice(), 0);
     }
 }

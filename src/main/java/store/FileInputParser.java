@@ -73,7 +73,7 @@ public class FileInputParser {
             GeneralProduct generalProduct = getGeneralProduct(split);
             generalProducts.put(generalProduct.getName(), generalProduct);
         }
-        return Collections.unmodifiableMap(generalProducts);
+        return generalProducts;
     }
 
     private static GeneralProduct getGeneralProduct(final String[] split) {
