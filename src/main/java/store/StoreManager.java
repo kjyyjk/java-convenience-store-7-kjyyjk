@@ -8,9 +8,9 @@ import static store.Parser.parseProducts;
 import static store.StoreFileReader.readPromotions;
 import static store.StoreFileWriter.updateProducts;
 import static store.view.InputView.readAdditionalPurchase;
-import static store.view.InputView.readExtraBonusQuantity;
-import static store.view.InputView.readMembershipDiscount;
-import static store.view.InputView.readNoPromotionQuantity;
+import static store.view.InputView.readPurchaseExtraPromotionQuantity;
+import static store.view.InputView.readGetMembershipDiscount;
+import static store.view.InputView.readPurchasePromotionNotAppliedQuantity;
 import static store.view.InputView.readPurchaseItems;
 import static store.view.OutputView.printError;
 import static store.view.OutputView.printProducts;
@@ -36,7 +36,7 @@ public class StoreManager {
             throw new RuntimeException(e);
         }
 
-        if (getAdditionalPurchase()) {
+        if (isWillAdditionalPurchase()) {
             run();
         }
     }
@@ -49,21 +49,21 @@ public class StoreManager {
                 int totalBonusQuantity = 0;
                 int promotionAppliedQuantity = 0;
                 int purchaseQuantity = purchaseItem.getQuantity();
+                String productName = purchaseItem.getName();
                 Product product = products.get(purchaseItem.getName());
-                String productName = product.getName();
                 product.validateExceedQuantity(purchaseQuantity);
                 boolean doingPromotion = product.isDoingPromotion(getTodayLocalDate());
                 if (doingPromotion) {
                     int extraBonusQuantity = product.getExtraBonusQuantity(purchaseQuantity);
                     if (extraBonusQuantity > 0) {
-                        if (parseYesOrNoToBoolean(readExtraBonusQuantity(productName, extraBonusQuantity))) {
+                        if (isWillGetExtraBonusQuantity(productName, extraBonusQuantity)) {
                             purchaseQuantity += extraBonusQuantity;
                         }
                     } else {
-                        int noPromotionQuantity = product.getNoPromotionQuantity(purchaseQuantity);
-                        if (noPromotionQuantity > 0) {
-                            if (!parseYesOrNoToBoolean(readNoPromotionQuantity(productName, noPromotionQuantity))) {
-                                purchaseQuantity -= noPromotionQuantity;
+                        int promotionNotAppliedQuantity = product.getNoPromotionQuantity(purchaseQuantity);
+                        if (promotionNotAppliedQuantity > 0) {
+                            if (!isWillPurchasePromotionNotAppliedQuantity(productName, promotionNotAppliedQuantity)) {
+                                purchaseQuantity -= promotionNotAppliedQuantity;
                             }
                         }
                     }
@@ -76,14 +76,13 @@ public class StoreManager {
                         purchaseQuantity, promotionAppliedQuantity, totalBonusQuantity);
                 purchaseHistory.add(purchaseHistoryDetail);
             }
-            boolean membershipDiscount = parseYesOrNoToBoolean(readMembershipDiscount());
-            return new PurchaseHistory(purchaseHistory, membershipDiscount);
+            return new PurchaseHistory(purchaseHistory, isWillGetMembershipDiscount());
         } catch (IllegalArgumentException e) {
             printError(e);
             return purchase(products);
         }
     }
-
+    
     private static Promotions getPromotions() {
         try {
             return new Promotions(parsePromotions(readPromotions()));
@@ -104,12 +103,40 @@ public class StoreManager {
         return DateTimes.now().toLocalDate();
     }
 
-    private boolean getAdditionalPurchase() {
+    private boolean isWillGetMembershipDiscount() {
+        try {
+            return parseYesOrNoToBoolean(readGetMembershipDiscount());
+        } catch (IllegalArgumentException e) {
+            printError(e);
+            return isWillGetMembershipDiscount();
+        }
+    }
+
+    private boolean isWillPurchasePromotionNotAppliedQuantity(final String productName, final int promotionNotAppliedQuantity) {
+        try {
+            return parseYesOrNoToBoolean(
+                    readPurchasePromotionNotAppliedQuantity(productName, promotionNotAppliedQuantity));
+        } catch (IllegalArgumentException e) {
+            printError(e);
+            return isWillPurchasePromotionNotAppliedQuantity(productName, promotionNotAppliedQuantity);
+        }
+    }
+
+    private boolean isWillGetExtraBonusQuantity(final String productName, final int extraBonusQuantity) {
+        try {
+            return parseYesOrNoToBoolean(readPurchaseExtraPromotionQuantity(productName, extraBonusQuantity));
+        } catch (IllegalArgumentException e) {
+            printError(e);
+            return isWillGetExtraBonusQuantity(productName, extraBonusQuantity);
+        }
+    }
+
+    private boolean isWillAdditionalPurchase() {
         try {
             return parseYesOrNoToBoolean(readAdditionalPurchase());
         } catch (IllegalArgumentException e) {
             printError(e);
-            return getAdditionalPurchase();
+            return isWillAdditionalPurchase();
         }
     }
 

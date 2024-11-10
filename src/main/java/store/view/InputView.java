@@ -14,8 +14,8 @@ public class InputView {
         return input();
     }
 
-    public static String readExtraBonusQuantity(final String name, final int extraBonusQuantity) {
-        String message = READ_EXTRA_PROMOTION_QUANTITY_MESSAGE.formatted(name, extraBonusQuantity);
+    public static String readPurchaseExtraPromotionQuantity(final String productName, final int extraBonusQuantity) {
+        String message = READ_EXTRA_PROMOTION_QUANTITY_MESSAGE.formatted(productName, extraBonusQuantity);
         System.out.println(message);
         return input();
     }
@@ -24,13 +24,13 @@ public class InputView {
         return Console.readLine();
     }
 
-    public static String readNoPromotionQuantity(final String name, final int noPromotionQuantity) {
-        String message = READ_NO_PROMOTION_QUANTITY_MESSAGE.formatted(name, noPromotionQuantity);
+    public static String readPurchasePromotionNotAppliedQuantity(final String productName, final int promotionNotAppliedQuantity) {
+        String message = READ_NO_PROMOTION_QUANTITY_MESSAGE.formatted(productName, promotionNotAppliedQuantity);
         System.out.println(message);
         return input();
     }
 
-    public static String readMembershipDiscount() {
+    public static String readGetMembershipDiscount() {
         System.out.println(READ_MEMBERSHIP_DISCOUNT_MESSAGE);
         return input();
     }
