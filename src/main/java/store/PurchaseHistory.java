@@ -21,6 +21,7 @@ public class PurchaseHistory {
 
     public List<PurchaseHistoryDetail> getBonusPurchaseHistoryDetails() {
         return purchaseHistoryDetails.stream()
+                .filter(PurchaseHistoryDetail::isNotZeroQuantity)
                 .filter(PurchaseHistoryDetail::hasBonusQuantity)
                 .toList();
     }
