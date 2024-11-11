@@ -41,17 +41,16 @@ class PromotionTest {
         assertThat(result).isEqualTo(expected);
     }
 
-    @DisplayName("Promotion은_프로모션_구매수량과_프로모션_재고에_따른_혜택_미적용_수량을_반환할_수_있다")
-    @CsvSource(value = {"2,1,5,3,0", "2,1,1,3,3", "2,1,2,2,2", "1,1,2,1,0", "1,1,1,2,2"}, delimiter = ',')
+    @DisplayName("Promotion은_프로모션_구매수량에_따른_혜택_미적용_수량을_반환할_수_있다")
+    @CsvSource(value = {"2,1,3,0", "2,1,2,2", "1,1,1,1", "1,1,2,0"}, delimiter = ',')
     @ParameterizedTest
-    public void getNotPromotionAppliedQuantity(int buyQuantity, int bonusQuantity, int promotionQuantity,
-                                               int purchaseQuantity, int expected) {
+    public void getNotPromotionAppliedQuantity(int buyQuantity, int bonusQuantity, int purchaseQuantity, int expected) {
         //given
         LocalDate now = LocalDate.now();
         Promotion promotion = new Promotion("test", buyQuantity, bonusQuantity, now, now);
 
         //when
-        int result = promotion.getNotPromotionAppliedQuantity(promotionQuantity, purchaseQuantity);
+        int result = promotion.getNotPromotionAppliedQuantity(purchaseQuantity);
 
         //then
         assertThat(result).isEqualTo(expected);

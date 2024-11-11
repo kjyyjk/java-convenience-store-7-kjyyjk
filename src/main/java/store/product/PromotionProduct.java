@@ -12,24 +12,17 @@ public class PromotionProduct extends Product {
     }
 
     public int getExtraBonusQuantity(final int purchaseQuantity) {
-        int extraBonusQuantity=0;
         if (purchaseQuantity <= getQuantity()) {
-            extraBonusQuantity =  promotion.getExtraBonusQuantity(purchaseQuantity);
+            return promotion.getExtraBonusQuantity(purchaseQuantity);
         }
-        if (purchaseQuantity > getQuantity()) {
-            extraBonusQuantity =  promotion.getExtraBonusQuantity(getQuantity());
-        }
-        if (extraBonusQuantity + purchaseQuantity > getQuantity()) {
-            return 0;
-        }
-        return extraBonusQuantity;
+        return 0;
     }
 
     public int getNotPromotionAppliedQuantity(final int purchaseQuantity) {
         if (purchaseQuantity <= getQuantity()) {
-            return promotion.getNotPromotionAppliedQuantity(getQuantity(), purchaseQuantity);
+            return promotion.getNotPromotionAppliedQuantity(purchaseQuantity);
         }
-        return promotion.getNotPromotionAppliedQuantity(getQuantity(), getQuantity());
+        return promotion.getNotPromotionAppliedQuantity(getQuantity());
     }
 
     public boolean isDoingPromotion(final LocalDate todayDate) {
