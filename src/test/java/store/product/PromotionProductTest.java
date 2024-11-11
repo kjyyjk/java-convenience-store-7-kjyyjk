@@ -27,7 +27,7 @@ class PromotionProductTest {
     }
 
     @DisplayName("PromotionProduct는_재고_수량과_구매_수량_프로모션_정책에_따른_프로모션_미적용_수량을_반환할_수_있다")
-    @CsvSource(value = {"6,0", "5,2", "12,1", "10,1"}, delimiter = ',')
+    @CsvSource(value = {"6,0", "5,2", "12,3", "10,1"}, delimiter = ',')
     @ParameterizedTest
     public void getNotPromotionAppliedQuantity(int purchaseQuantity, int expected) {
         //given
