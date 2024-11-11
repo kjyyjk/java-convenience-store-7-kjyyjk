@@ -3,15 +3,15 @@ package store;
 public class PurchaseHistoryDetail {
     private final String productName;
     private final int productPrice;
-    private final int totalQuantity;
+    private final int purchaseQuantity;
     private final int promotionAppliedQuantity;
     private final int bonusQuantity;
 
-    public PurchaseHistoryDetail(final String productName, final int productPrice, final int totalQuantity,
+    public PurchaseHistoryDetail(final String productName, final int productPrice, final int purchaseQuantity,
                                  final int promotionAppliedQuantity, final int bonusQuantity) {
         this.productName = productName;
         this.productPrice = productPrice;
-        this.totalQuantity = totalQuantity;
+        this.purchaseQuantity = purchaseQuantity;
         this.promotionAppliedQuantity = promotionAppliedQuantity;
         this.bonusQuantity = bonusQuantity;
     }
@@ -25,7 +25,7 @@ public class PurchaseHistoryDetail {
     }
 
     public int getTotalQuantity() {
-        return totalQuantity;
+        return purchaseQuantity;
     }
 
     public int getProductPrice() {
@@ -37,7 +37,7 @@ public class PurchaseHistoryDetail {
     }
 
     public int calculatePurchaseAmount() {
-        return productPrice * totalQuantity;
+        return productPrice * purchaseQuantity;
     }
 
     public int calculatePromotionDiscountAmount() {
@@ -46,5 +46,9 @@ public class PurchaseHistoryDetail {
 
     public int calculatePromotionAppliedAmount() {
         return productPrice * promotionAppliedQuantity;
+    }
+
+    public boolean isNotZeroQuantity() {
+        return purchaseQuantity > 0;
     }
 }

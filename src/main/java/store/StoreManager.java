@@ -17,7 +17,9 @@ public class StoreManager {
     public void run(final Products products) {
         printProducts(products);
         PurchaseHistory purchaseHistory = purchase(products);
-        printReceipt(purchaseHistory);
+        if (!purchaseHistory.isTotalPurchaseQuantityEqualsZero()) {
+            printReceipt(purchaseHistory);
+        }
         if (isWillAdditionalPurchase()) {
             run(products);
         }
@@ -38,11 +40,10 @@ public class StoreManager {
                                                          final List<PurchaseItem> purchaseItems) {
         List<PurchaseHistoryDetail> purchaseHistory = new ArrayList<>();
         for (PurchaseItem purchaseItem : purchaseItems) {
-            String productName = purchaseItem.getName();
-            int purchaseQuantity = purchaseItem.getQuantity();
-            products.validateProductExists(productName);
-            products.validateProductQuantity(productName, purchaseQuantity);
-            PurchaseHistoryDetail purchaseHistoryDetail = products.purchaseProduct(productName, purchaseQuantity);
+            products.validateProductExists(purchaseItem.getName());
+            products.validateProductQuantity(purchaseItem.getName(), purchaseItem.getQuantity());
+            PurchaseHistoryDetail purchaseHistoryDetail = products.purchaseProduct(purchaseItem.getName(),
+                    purchaseItem.getQuantity());
             purchaseHistory.add(purchaseHistoryDetail);
         }
         return purchaseHistory;

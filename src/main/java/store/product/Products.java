@@ -72,7 +72,6 @@ public class Products {
         if (generalProduct != null) {
             return generalProduct.getPrice();
         }
-
         return promotionProduct.getPrice();
     }
 

@@ -16,7 +16,9 @@ public class PurchaseHistory {
     }
 
     public List<PurchaseHistoryDetail> getPurchaseHistoryDetails() {
-        return Collections.unmodifiableList(purchaseHistoryDetails);
+        return purchaseHistoryDetails.stream()
+                .filter(PurchaseHistoryDetail::isNotZeroQuantity)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<PurchaseHistoryDetail> getBonusPurchaseHistoryDetails() {
@@ -67,6 +69,10 @@ public class PurchaseHistory {
             return payAmount - calculateMembershipDiscountAmount();
         }
         return payAmount;
+    }
+
+    public boolean isTotalPurchaseQuantityEqualsZero() {
+        return (getPurchaseHistoryDetails().size() == 0);
     }
 
     private int calculatePromotionAppliedAmount() {
