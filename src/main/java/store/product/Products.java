@@ -50,7 +50,6 @@ public class Products {
             promotionAppliedQuantity = promotionProduct.getPromotionAppliedQuantity(finalPurchaseQuantity);
             totalBonusQuantity = promotionProduct.getTotalBonusQuantity(finalPurchaseQuantity);
         }
-
         decreaseProductQuantity(productName, finalPurchaseQuantity);
         return new PurchaseHistoryDetail(productName, getProductPriceByName(productName), finalPurchaseQuantity,
                 promotionAppliedQuantity, totalBonusQuantity);
@@ -109,6 +108,11 @@ public class Products {
     private int getTotalQuantityByName(final String productName) {
         GeneralProduct generalProduct = getGeneralProductByName(productName);
         PromotionProduct promotionProduct = getPromotionProductByName(productName);
+        int totalQuantity = getTotalQuantity(generalProduct, promotionProduct);
+        return totalQuantity;
+    }
+
+    private int getTotalQuantity(final GeneralProduct generalProduct, final PromotionProduct promotionProduct) {
         int totalQuantity = 0;
         if (generalProduct != null) {
             totalQuantity += generalProduct.getQuantity();

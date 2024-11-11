@@ -28,7 +28,7 @@ public class StoreManager {
     private PurchaseHistory purchase(final Products products) {
         try {
             List<PurchaseItem> purchaseItems = parsePurchaseItems(readPurchaseItems());
-            List<PurchaseHistoryDetail> purchaseHistory = purchaseProducts(products, purchaseItems);
+            List<PurchaseHistoryDetail> purchaseHistory = getPurchaseHistory(products, purchaseItems);
             return new PurchaseHistory(purchaseHistory, isWillGetMembershipDiscount());
         } catch (IllegalArgumentException e) {
             printError(e);
@@ -36,17 +36,20 @@ public class StoreManager {
         }
     }
 
-    private List<PurchaseHistoryDetail> purchaseProducts(final Products products,
-                                                         final List<PurchaseItem> purchaseItems) {
+    private List<PurchaseHistoryDetail> getPurchaseHistory(final Products products,
+                                                           final List<PurchaseItem> purchaseItems) {
         List<PurchaseHistoryDetail> purchaseHistory = new ArrayList<>();
         for (PurchaseItem purchaseItem : purchaseItems) {
-            products.validateProductExists(purchaseItem.getName());
-            products.validateProductQuantity(purchaseItem.getName(), purchaseItem.getQuantity());
-            PurchaseHistoryDetail purchaseHistoryDetail = products.purchaseProduct(purchaseItem.getName(),
-                    purchaseItem.getQuantity());
+            PurchaseHistoryDetail purchaseHistoryDetail = getPurchaseHistoryDetail(products, purchaseItem);
             purchaseHistory.add(purchaseHistoryDetail);
         }
         return purchaseHistory;
+    }
+
+    private static PurchaseHistoryDetail getPurchaseHistoryDetail(Products products, PurchaseItem purchaseItem) {
+        products.validateProductExists(purchaseItem.getName());
+        products.validateProductQuantity(purchaseItem.getName(), purchaseItem.getQuantity());
+        return products.purchaseProduct(purchaseItem.getName(), purchaseItem.getQuantity());
     }
 
     private boolean isWillGetMembershipDiscount() {

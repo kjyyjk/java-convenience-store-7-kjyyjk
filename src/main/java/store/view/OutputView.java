@@ -1,5 +1,17 @@
 package store.view;
 
+import static store.Receipt.HEADER;
+import static store.Receipt.MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT;
+import static store.Receipt.PAY_AMOUNT_FORMAT;
+import static store.Receipt.PROMOTION_FOOTER;
+import static store.Receipt.PROMOTION_DISCOUNT_AMOUNT_FORMAT;
+import static store.Receipt.PROMOTION_FORMAT;
+import static store.Receipt.PROMOTION_HEADER;
+import static store.Receipt.PURCHASE_HISTORY_DETAIL_FOOTER;
+import static store.Receipt.PURCHASE_HISTORY_DETAIL_FORMAT;
+import static store.Receipt.TOTAL_PURCHASE_AMOUNT_FORMAT;
+
+import store.ErrorMessage;
 import store.PurchaseHistory;
 import store.PurchaseHistoryDetail;
 import store.product.GeneralProduct;
@@ -9,21 +21,10 @@ import store.product.PromotionProduct;
 
 public class OutputView {
     private static final String WELCOME_MESSAGE = "\n안녕하세요. W편의점입니다.\n현재 보유하고 있는 상품입니다.\n";
-    private static final String ERROR_MESSAGE_PREFIX = "[ERROR] ";
     private static final String PRINT_GENERAL_PRODUCT_FORMAT = "- %s %,d원 %s";
     private static final String PRINT_PROMOTION_PRODUCT_FORMAT = "- %s %,d원 %s %s";
     private static final String ZERO_QUANTITY = "재고 없음";
     private static final String QUANTITY_UNIT = "개";
-    private static final String RECEIPT_HEAD = "\n==============W 편의점================";
-    private static final String RECEIPT_PURCHASE_HISTORY_DETAIL = "상품명           수량           금액";
-    private static final String RECEIPT_PURCHASE_HISTORY_DETAIL_FORMAT = "%-13s%3d            %,-6d";
-    private static final String RECEIPT_PROMOTION_MESSAGE = "=============증\t\t정===============";
-    private static final String RECEIPT_PROMOTION_FORMAT = "%-13s%3d";
-    private static final String RECEIPT_PROMOTION_BORDER = "====================================";
-    private static final String RECEIPT_TOTAL_PURCHASE_AMOUNT_FORMAT = "총구매액%12d            %,-6d";
-    private static final String RECEIPT_PROMOTION_DISCOUNT_AMOUNT_FORMAT = "행사할인                        -%,-6d";
-    private static final String RECEIPT_MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT = "멤버십할인                       -%,-6d";
-    private static final String RECEIPT_PAY_AMOUNT_FORMAT = "내실돈                          %,-6d";
 
     public static void printProducts(final Products products) {
         System.out.println(WELCOME_MESSAGE);
@@ -64,7 +65,7 @@ public class OutputView {
     }
 
     public static void printReceipt(final PurchaseHistory purchaseHistory) {
-        System.out.println(RECEIPT_HEAD);
+        System.out.println(HEADER.getMessage());
         pringPurchaseHistory(purchaseHistory);
         printReceiptPromotion(purchaseHistory);
         printTotalPurchaseAmount(purchaseHistory);
@@ -74,41 +75,48 @@ public class OutputView {
 
     private static void printPayAmount(final PurchaseHistory purchaseHistory) {
         int payAmount = purchaseHistory.calculatePayAmount();
-        System.out.println(RECEIPT_PAY_AMOUNT_FORMAT.formatted(payAmount));
+        String payAmountFormat = PAY_AMOUNT_FORMAT.getMessage();
+        System.out.println(payAmountFormat.formatted(payAmount));
     }
 
     private static void printDiscountAmount(final PurchaseHistory purchaseHistory) {
         int promotionDiscountAmount = purchaseHistory.calculatePromotionDiscountAmount();
         int membershipDiscountAmount = purchaseHistory.calculateMembershipDiscountAmount();
-        System.out.println(RECEIPT_PROMOTION_DISCOUNT_AMOUNT_FORMAT.formatted(promotionDiscountAmount));
-        System.out.println(RECEIPT_MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT.formatted(membershipDiscountAmount));
+        String promotionDiscountAmountFormat = PROMOTION_DISCOUNT_AMOUNT_FORMAT.getMessage();
+        String membershipDiscountAmountFormat = MEMBERSHIP_DISCOUNT_AMOUNT_FORMAT.getMessage();
+        System.out.println(promotionDiscountAmountFormat.formatted(promotionDiscountAmount));
+        System.out.println(membershipDiscountAmountFormat.formatted(membershipDiscountAmount));
     }
 
     private static void printTotalPurchaseAmount(final PurchaseHistory purchaseHistory) {
         int totalPurchaseQuantity = purchaseHistory.calculateTotalPurchaseQuantity();
         int totalPurchaseAmount = purchaseHistory.calculateTotalPurchaseAmount();
-        System.out.println(RECEIPT_TOTAL_PURCHASE_AMOUNT_FORMAT.formatted(totalPurchaseQuantity, totalPurchaseAmount));
+        String totalPurchaseAmountFormat = TOTAL_PURCHASE_AMOUNT_FORMAT.getMessage();
+        System.out.println(totalPurchaseAmountFormat.formatted(totalPurchaseQuantity, totalPurchaseAmount));
     }
 
     private static void pringPurchaseHistory(final PurchaseHistory purchaseHistory) {
-        System.out.println(RECEIPT_PURCHASE_HISTORY_DETAIL);
+        System.out.println(PURCHASE_HISTORY_DETAIL_FOOTER);
         for (PurchaseHistoryDetail detail : purchaseHistory.getPurchaseHistoryDetails()) {
-            System.out.println(RECEIPT_PURCHASE_HISTORY_DETAIL_FORMAT.formatted(detail.getProductName(),
+            String purchaseHistoryDetailFormat = PURCHASE_HISTORY_DETAIL_FORMAT.getMessage();
+            System.out.println(purchaseHistoryDetailFormat.formatted(detail.getProductName(),
                     detail.getTotalQuantity(), detail.getProductPrice()));
         }
     }
 
     private static void printReceiptPromotion(final PurchaseHistory purchaseHistory) {
-        System.out.println(RECEIPT_PROMOTION_MESSAGE);
+        System.out.println(PROMOTION_HEADER);
         for (PurchaseHistoryDetail detail : purchaseHistory.getBonusPurchaseHistoryDetails()) {
-            System.out.println(
-                    RECEIPT_PROMOTION_FORMAT.formatted(detail.getProductName(), detail.getBonusQuantity()));
+            String promotionFormat = PROMOTION_FORMAT.getMessage();
+            System.out.println(promotionFormat.formatted(detail.getProductName(), detail.getBonusQuantity()));
         }
-        System.out.println(RECEIPT_PROMOTION_BORDER);
+        System.out.println(PROMOTION_FOOTER.getMessage());
     }
 
     public static void printError(final IllegalArgumentException e) {
-        String message = ERROR_MESSAGE_PREFIX + e.getMessage();
+        String errorMessagePrefix = ErrorMessage.PREFIX
+                .getMessage();
+        String message = errorMessagePrefix + e.getMessage();
         System.out.println(message);
     }
 }

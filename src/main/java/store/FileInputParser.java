@@ -13,6 +13,7 @@ import store.product.GeneralProduct;
 import store.product.PromotionProduct;
 
 public class FileInputParser {
+    private static final String NULL_PROMOTION = "null";
     private static final String PRODUCT_INFORMATION_DELIMITER = ",";
     private static final String PROMOTION_INFORMATION_DELIMITER = ",";
 
@@ -43,7 +44,7 @@ public class FileInputParser {
         String productInformation = bufferedReader.readLine();
         while ((productInformation = bufferedReader.readLine()) != null) {
             String[] split = productInformation.split(PRODUCT_INFORMATION_DELIMITER);
-            if (split[3].equals("null")) {
+            if (split[3].equals(NULL_PROMOTION)) {
                 continue;
             }
             PromotionProduct promotionProduct = getPromotionProduct(promotions, split);
@@ -67,7 +68,7 @@ public class FileInputParser {
         String productInformation = bufferedReader.readLine();
         while ((productInformation = bufferedReader.readLine()) != null) {
             String[] split = productInformation.split(PRODUCT_INFORMATION_DELIMITER);
-            if (!split[3].equals("null")) {
+            if (!split[3].equals(NULL_PROMOTION)) {
                 continue;
             }
             GeneralProduct generalProduct = getGeneralProduct(split);
