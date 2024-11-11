@@ -66,5 +66,4 @@ public class StoreManager {
             return isWillAdditionalPurchase();
         }
     }
-
 }
