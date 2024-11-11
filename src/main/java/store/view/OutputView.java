@@ -72,12 +72,12 @@ public class OutputView {
         printPayAmount(purchaseHistory);
     }
 
-    private static void printPayAmount(PurchaseHistory purchaseHistory) {
+    private static void printPayAmount(final PurchaseHistory purchaseHistory) {
         int payAmount = purchaseHistory.calculatePayAmount();
         System.out.println(RECEIPT_PAY_AMOUNT_FORMAT.formatted(payAmount));
     }
 
-    private static void printDiscountAmount(PurchaseHistory purchaseHistory) {
+    private static void printDiscountAmount(final PurchaseHistory purchaseHistory) {
         int promotionDiscountAmount = purchaseHistory.calculatePromotionDiscountAmount();
         int membershipDiscountAmount = purchaseHistory.calculateMembershipDiscountAmount();
         System.out.println(RECEIPT_PROMOTION_DISCOUNT_AMOUNT_FORMAT.formatted(promotionDiscountAmount));

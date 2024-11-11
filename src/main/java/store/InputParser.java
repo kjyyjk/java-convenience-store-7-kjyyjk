@@ -66,11 +66,9 @@ public class InputParser {
         if (input.equals(TRUE_VALUE)) {
             return true;
         }
-
         if (input.equals(FALSE_VALUE)) {
             return false;
         }
-
         throw new IllegalArgumentException(INVALID_INPUT.getMessage());
     }
 }

@@ -61,7 +61,7 @@ public class Application {
         return !generalProducts.containsKey(productName);
     }
 
-    private static GeneralProduct getBasicGeneralProduct(PromotionProduct product) {
+    private static GeneralProduct getBasicGeneralProduct(final PromotionProduct product) {
         return new GeneralProduct(product.getName(), product.getPrice(), 0);
     }
 }
