@@ -58,10 +58,8 @@ public class Products {
 
     public List<Product> getProducts() {
         List<Product> products = new ArrayList<>();
-        promotionProducts.values()
-                .forEach(products::add);
-        generalProducts.values()
-                .forEach(products::add);
+        products.addAll(promotionProducts.values());
+        products.addAll(generalProducts.values());
         products.sort(Comparator.comparing(Product::getName));
         return Collections.unmodifiableList(products);
     }
