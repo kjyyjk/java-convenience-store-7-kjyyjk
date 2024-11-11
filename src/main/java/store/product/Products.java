@@ -95,7 +95,7 @@ public class Products {
         if (extraBonusQuantity > 0) {
             return purchaseQuantity + getExtraQuantity(promotionProduct.getName(), extraBonusQuantity);
         }
-        int promotionNotAppliedQuantity = promotionProduct.getNoPromotionQuantity(purchaseQuantity);
+        int promotionNotAppliedQuantity = promotionProduct.getNotPromotionAppliedQuantity(purchaseQuantity);
         if (promotionNotAppliedQuantity > 0) {
             return purchaseQuantity - getExcludeQuantity(promotionProduct.getName(), promotionNotAppliedQuantity);
         }
