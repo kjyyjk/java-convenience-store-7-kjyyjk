@@ -66,7 +66,7 @@ public class OutputView {
 
     public static void printReceipt(final PurchaseHistory purchaseHistory) {
         System.out.println(HEADER.getMessage());
-        pringPurchaseHistory(purchaseHistory);
+        printPurchaseHistory(purchaseHistory);
         printReceiptPromotion(purchaseHistory);
         printTotalPurchaseAmount(purchaseHistory);
         printDiscountAmount(purchaseHistory);
@@ -95,17 +95,17 @@ public class OutputView {
         System.out.println(totalPurchaseAmountFormat.formatted(totalPurchaseQuantity, totalPurchaseAmount));
     }
 
-    private static void pringPurchaseHistory(final PurchaseHistory purchaseHistory) {
-        System.out.println(PURCHASE_HISTORY_DETAIL_FOOTER);
+    private static void printPurchaseHistory(final PurchaseHistory purchaseHistory) {
+        System.out.println(PURCHASE_HISTORY_DETAIL_FOOTER.getMessage());
         for (PurchaseHistoryDetail detail : purchaseHistory.getPurchaseHistoryDetails()) {
             String purchaseHistoryDetailFormat = PURCHASE_HISTORY_DETAIL_FORMAT.getMessage();
             System.out.println(purchaseHistoryDetailFormat.formatted(detail.getProductName(),
-                    detail.getTotalQuantity(), detail.getProductPrice()));
+                    detail.getTotalQuantity(), detail.getTotalQuantity() * detail.getProductPrice()));
         }
     }
 
     private static void printReceiptPromotion(final PurchaseHistory purchaseHistory) {
-        System.out.println(PROMOTION_HEADER);
+        System.out.println(PROMOTION_HEADER.getMessage());
         for (PurchaseHistoryDetail detail : purchaseHistory.getBonusPurchaseHistoryDetails()) {
             String promotionFormat = PROMOTION_FORMAT.getMessage();
             System.out.println(promotionFormat.formatted(detail.getProductName(), detail.getBonusQuantity()));

@@ -22,7 +22,7 @@ public class PromotionProduct extends Product {
         if (purchaseQuantity <= getQuantity()) {
             return promotion.getNotPromotionAppliedQuantity(purchaseQuantity);
         }
-        return promotion.getNotPromotionAppliedQuantity(getQuantity());
+        return purchaseQuantity - getQuantity() + promotion.getNotPromotionAppliedQuantity(getQuantity());
     }
 
     public boolean isDoingPromotion(final LocalDate todayDate) {
