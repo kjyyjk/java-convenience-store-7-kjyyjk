@@ -37,7 +37,12 @@ public class Promotion {
     }
 
     public int getNotPromotionAppliedQuantity(final int promotionQuantity, final int purchaseQuantity) {
-        return purchaseQuantity - ((buyQuantity + bonusQuantity) * (promotionQuantity / (buyQuantity + bonusQuantity)));
+        int appliedQuantity = (buyQuantity + bonusQuantity) * (promotionQuantity / (buyQuantity + bonusQuantity));
+        int notAppliedQuantity = purchaseQuantity - appliedQuantity;
+        if (notAppliedQuantity < 0) {
+            return 0;
+        }
+        return notAppliedQuantity;
     }
 
     public int getTotalBonusQuantity(final int purchaseQuantity) {

@@ -12,7 +12,13 @@ public class PromotionProduct extends Product {
     }
 
     public int getExtraBonusQuantity(final int purchaseQuantity) {
-        int extraBonusQuantity = promotion.getExtraBonusQuantity(purchaseQuantity);
+        int extraBonusQuantity=0;
+        if (purchaseQuantity <= getQuantity()) {
+            extraBonusQuantity =  promotion.getExtraBonusQuantity(purchaseQuantity);
+        }
+        if (purchaseQuantity > getQuantity()) {
+            extraBonusQuantity =  promotion.getExtraBonusQuantity(getQuantity());
+        }
         if (extraBonusQuantity + purchaseQuantity > getQuantity()) {
             return 0;
         }
