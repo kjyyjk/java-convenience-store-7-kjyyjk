@@ -17,8 +17,12 @@ public class InputParser {
 
     public static List<PurchaseItem> parsePurchaseItems(final String input) {
         List<PurchaseItem> purchaseItems = new ArrayList<>();
-        for (String purchaseItem : input.split(PURCHASE_ITEMS_DELIMITER)) {
-            purchaseItems.add(parsePurchaseItem(purchaseItem));
+        for (String purchaseItemInput : input.split(PURCHASE_ITEMS_DELIMITER)) {
+            PurchaseItem purchaseItem = parsePurchaseItem(purchaseItemInput);
+            if (purchaseItems.contains(purchaseItem)) {
+                throw new IllegalArgumentException(INVALID_PURCHASE_ITEM_FORMAT.getMessage());
+            }
+            purchaseItems.add(purchaseItem);
         }
         return purchaseItems;
     }

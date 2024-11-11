@@ -1,8 +1,6 @@
 package store;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PurchaseHistory {
     private static final double MEMBERSHIP_DISCOUNT_RATE = 0.3;
@@ -18,13 +16,13 @@ public class PurchaseHistory {
     public List<PurchaseHistoryDetail> getPurchaseHistoryDetails() {
         return purchaseHistoryDetails.stream()
                 .filter(PurchaseHistoryDetail::isNotZeroQuantity)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public List<PurchaseHistoryDetail> getBonusPurchaseHistoryDetails() {
         return purchaseHistoryDetails.stream()
-                .filter(detail -> detail.hasBonusQuantity())
-                .collect(Collectors.toUnmodifiableList());
+                .filter(PurchaseHistoryDetail::hasBonusQuantity)
+                .toList();
     }
 
     public int calculateTotalPurchaseQuantity() {

@@ -1,6 +1,6 @@
 package store;
 
-import static store.ErrorMessage.*;
+import static store.ErrorMessage.INVALID_INPUT;
 
 public class PurchaseItem {
     private final String name;
@@ -24,5 +24,14 @@ public class PurchaseItem {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PurchaseItem)) {
+            return false;
+        }
+        String name = ((PurchaseItem) obj).getName();
+        return this.name.equals(name);
     }
 }
